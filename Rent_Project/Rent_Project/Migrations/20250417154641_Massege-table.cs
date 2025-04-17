@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Rentproject.Migrations
+namespace Rent_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class MessageTable : Migration
+    public partial class Massegetable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

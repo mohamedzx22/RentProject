@@ -2,32 +2,38 @@
 
 #nullable disable
 
-namespace Rentproject.Migrations
+namespace Rent_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class SavepostTable : Migration
+    public partial class Proposaltable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Save_Post",
+                name: "Proposals",
                 columns: table => new
                 {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Document = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Phone = table.Column<int>(type: "int", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Save_Post", x => new { x.PostId, x.UserId });
+                    table.PrimaryKey("PK_Proposals", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Save_Post_Posts_PostId",
+                        name: "FK_Proposals_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Save_Post_Users_UserId",
+                        name: "FK_Proposals_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "id",
@@ -35,8 +41,13 @@ namespace Rentproject.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Save_Post_UserId",
-                table: "Save_Post",
+                name: "IX_Proposals_PostId",
+                table: "Proposals",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Proposals_UserId",
+                table: "Proposals",
                 column: "UserId");
         }
 
@@ -44,7 +55,7 @@ namespace Rentproject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Save_Post");
+                name: "Proposals");
         }
     }
 }

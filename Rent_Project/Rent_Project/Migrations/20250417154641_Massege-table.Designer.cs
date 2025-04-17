@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Rentproject.Models;
+using Rent_Project.Model;
 
 #nullable disable
 
-namespace Rentproject.Migrations
+namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250416213131_PostTable")]
-    partial class PostTable
+    [Migration("20250417154641_Massege-table")]
+    partial class Massegetable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Rentproject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Rentproject.Models.Message", b =>
+            modelBuilder.Entity("Rent_Project.Model.Message", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -55,61 +55,7 @@ namespace Rentproject.Migrations
                     b.ToTable("Masseges");
                 });
 
-            modelBuilder.Entity("Rentproject.Models.Post", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int>("Accsepted_Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LandlordId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Landlord_name")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Number_of_viewers")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("User_id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("images")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("rental_status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("id");
-
-                    b.HasIndex("LandlordId");
-
-                    b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("Rentproject.Models.User", b =>
+            modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -140,15 +86,15 @@ namespace Rentproject.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Rentproject.Models.Message", b =>
+            modelBuilder.Entity("Rent_Project.Model.Message", b =>
                 {
-                    b.HasOne("Rentproject.Models.User", "Receiver")
+                    b.HasOne("Rent_Project.Model.User", "Receiver")
                         .WithMany("ReceivedMessages")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Rentproject.Models.User", "Sender")
+                    b.HasOne("Rent_Project.Model.User", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -159,21 +105,8 @@ namespace Rentproject.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("Rentproject.Models.Post", b =>
+            modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
-                    b.HasOne("Rentproject.Models.User", "Landlord")
-                        .WithMany("Posts")
-                        .HasForeignKey("LandlordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Landlord");
-                });
-
-            modelBuilder.Entity("Rentproject.Models.User", b =>
-                {
-                    b.Navigation("Posts");
-
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("SentMessages");

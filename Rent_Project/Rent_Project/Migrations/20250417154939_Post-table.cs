@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Rentproject.Migrations
+namespace Rent_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class PostTable : Migration
+    public partial class Posttable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

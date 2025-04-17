@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Rentproject.Models;
+using Rent_Project.Model;
 
 #nullable disable
 
-namespace Rentproject.Migrations
+namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250416211954_UserTable")]
-    partial class UserTable
+    [Migration("20250417154043_inti-database")]
+    partial class intidatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Rentproject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Rentproject.Models.User", b =>
+            modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()

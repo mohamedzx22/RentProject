@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Hosting;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace Rentproject.Models
+namespace Rent_Project.Model
 {
     [Table("Users")]
     public class User
@@ -20,15 +16,16 @@ namespace Rentproject.Models
         public int number { get; set; }
         public string email { get; set; }
         public int role { get; set; }//1-Admin  2-Landlord  3-Tenant
-
+        
         public virtual ICollection<Message> SentMessages { get; set; }
 
         public virtual ICollection<Message> ReceivedMessages { get; set; }
-
+        
         public virtual ICollection<Post> Posts { get; set; }
-
+        
         public virtual ICollection<Save_Post> Save_Posts { get; set; }
+        
         public virtual ICollection<Proposal> Proposals { get; set; }
-
+        
     }
 }
