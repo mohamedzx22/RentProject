@@ -30,7 +30,7 @@ namespace Rent_Project.Controllers
             return Ok(landlords);
         }
         [HttpPost]
-        public async Task<IActionResult> AddLandlord(String name,int pass,int num,String mail,int role)
+        public async Task<IActionResult> AddLandlord(String name, String pass, String num, String mail, int role)
         {
             User Landlord = new User();
             {
