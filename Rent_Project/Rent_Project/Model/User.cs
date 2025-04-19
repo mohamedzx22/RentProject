@@ -25,7 +25,8 @@ namespace Rent_Project.Model
         public string number { get; set; }
         public string email { get; set; }
         public int role { get; set; }//1-Admin  2-Landlord  3-Tenant
-        
+        public int? Landlord_Status { get; set; } // 0: Pending, 1: Accepted, 2: Rejected
+
         public virtual ICollection<Message> SentMessages { get; set; }
 
         public virtual ICollection<Message> ReceivedMessages { get; set; }

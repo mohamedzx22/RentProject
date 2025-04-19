@@ -29,6 +29,7 @@ namespace Rent_Project.Controllers
 
             return Ok(landlords);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddLandlord(String name, String pass, String num, String mail, int role)
         {
@@ -74,5 +75,9 @@ namespace Rent_Project.Controllers
             _db.SaveChanges();
             return Ok(landlord);
         }
+
+       
+
+
     }
 }

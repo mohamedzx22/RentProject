@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent_Project.Model;
 
@@ -11,9 +12,11 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    partial class RentAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419120111_alter-post-table")]
+    partial class alterposttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Masseges", (string)null);
+                    b.ToTable("Masseges");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Post", b =>
@@ -103,7 +106,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("Landlord_id");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Proposal", b =>
@@ -114,9 +117,9 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<byte[]>("Document")
+                    b.Property<string>("Document")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Phone")
                         .HasColumnType("int");
@@ -142,7 +145,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Proposals", (string)null);
+                    b.ToTable("Proposals");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
@@ -157,7 +160,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Save_Posts", (string)null);
+                    b.ToTable("Save_Posts");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
@@ -184,18 +187,18 @@ namespace Rent_Project.Migrations
 
                     b.Property<string>("number")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("role")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
