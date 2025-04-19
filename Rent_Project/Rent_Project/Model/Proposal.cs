@@ -7,7 +7,7 @@ namespace Rent_Project.Model
     {
         public int id { get; set; }
         public string name { get; set; }
-        public string Document { get; set; }
+        public byte[] Document { get; set; }
         public int Status { get; set; }//0-accept  1-reject
         public int Phone { get; set; }
         public int PostId { get; set; }
