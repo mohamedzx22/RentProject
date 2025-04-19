@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent_Project.Model;
 
@@ -11,9 +12,11 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    partial class RentAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250418160930_UpdatePasswordToString")]
+    partial class UpdatePasswordToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,20 +64,17 @@ namespace Rent_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<int>("Accsepted_Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Landlord_id")
+                    b.Property<int>("LandlordId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Landlord_name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Landlord_name")
+                        .HasColumnType("int");
 
                     b.Property<int>("Number_of_viewers")
                         .HasColumnType("int");
@@ -85,6 +85,9 @@ namespace Rent_Project.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("User_id")
+                        .HasColumnType("int");
 
                     b.Property<string>("images")
                         .IsRequired()
@@ -101,7 +104,7 @@ namespace Rent_Project.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Landlord_id");
+                    b.HasIndex("LandlordId");
 
                     b.ToTable("Posts");
                 });
@@ -114,9 +117,9 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<byte[]>("Document")
+                    b.Property<string>("Document")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Phone")
                         .HasColumnType("int");
@@ -125,9 +128,7 @@ namespace Rent_Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -168,11 +169,6 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int?>("Landlord_Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -182,21 +178,12 @@ namespace Rent_Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("number")
-                        .IsRequired()
-<<<<<<< HEAD
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)");
-=======
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("number")
+                        .HasColumnType("int");
 
                     b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
->>>>>>> 0cefbd8 (addPost,Put)
 
                     b.Property<int>("role")
                         .HasColumnType("int");
@@ -229,7 +216,7 @@ namespace Rent_Project.Migrations
                 {
                     b.HasOne("Rent_Project.Model.User", "Landlord")
                         .WithMany("Posts")
-                        .HasForeignKey("Landlord_id")
+                        .HasForeignKey("LandlordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

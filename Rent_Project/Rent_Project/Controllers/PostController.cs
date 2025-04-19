@@ -74,69 +74,7 @@ namespace Rent_Project.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("pending-Posts")]
-        public async Task<IActionResult> GetPendingPosts()
-        {
-            var pendingPosts = await _db.Posts
-                .Where(L => L.Accsepted_Status == 0)
-                .Select(L => new 
-                {
-                      L.Title,
-                      L.Description,
-                      L.location,
-                      L.Price,
-                      L.rental_status,
-                      L.Number_of_viewers,
-                      L.Landlord_name,
-                      L.images,
-                  })
-                .ToListAsync();
-
-            return Ok(pendingPosts);
-        }
-
-        [HttpPost("approve-Posts/{id}")]
-        public async Task<IActionResult> ApproveLandlord(int id)
-        {
-            var Posts = await _db.Posts.FindAsync(id);
-
-            if (Posts == null )
-                return NotFound("Post not found .");
-
-            Posts.Accsepted_Status = 1;
-            await _db.SaveChangesAsync();
-
-            return Ok("Post approved successfully.");
-        }
-
-        [HttpPost("reject-post/{id}")]
-        public async Task<IActionResult> RejectPost(int id)
-        {
-            var post = await _db.Posts.FindAsync(id);
-
-            if (post == null)
-                return NotFound("Post not found.");
-
-            post.Accsepted_Status = 2; 
-            await _db.SaveChangesAsync();
-
-            return Ok("Post rejected successfully.");
-        }
-
-        [HttpDelete("delete-rejected-posts")]
-        public async Task<IActionResult> DeleteRejectedPosts()
-        {
-           
-            var rejectedPosts = await _db.Posts.Where(p => p.Accsepted_Status == 2).ToListAsync();
-
-            if (rejectedPosts.Count == 0)
-                return NotFound("No rejected posts found.");
-
-            _db.Posts.RemoveRange(rejectedPosts);
-            await _db.SaveChangesAsync();
-
-            return Ok("All rejected posts deleted successfully.");
-        }
+        
 
 
     }

@@ -29,6 +29,7 @@ namespace Rent_Project.Controllers
 
             return Ok(landlords);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddLandlord(String name, String pass, String num, String mail, int role)
         {
@@ -75,67 +76,7 @@ namespace Rent_Project.Controllers
             return Ok(landlord);
         }
 
-        [HttpGet("pending-landlords")]
-        public async Task<IActionResult> GetPendingLandlords()
-        {
-            var pendingLandlords = await _db.Users
-                .Where(u => u.role == 2 && u.Landlord_Status == 0)
-                .Select(u => new {
-                    u.id,
-                    u.name,
-                    u.email,
-                    u.number
-                })
-                .ToListAsync();
-
-            return Ok(pendingLandlords);
-        }
-
-
-        [HttpPost("approve-landlord/{id}")]
-        public async Task<IActionResult> ApproveLandlord(int id)
-        {
-            var user = await _db.Users.FindAsync(id);
-
-            if (user == null || user.role != 2)
-                return NotFound("User not found or not a landlord.");
-
-            user.Landlord_Status = 1;
-            await _db.SaveChangesAsync();
-
-            return Ok("Landlord approved successfully.");
-        }
-
-        [HttpPost("reject-landlord/{id}")]
-        public async Task<IActionResult> RejectLandlord(int id)
-        {
-            var user = await _db.Users.FindAsync(id);
-
-            if (user == null || user.role != 2)
-                return NotFound("User not found or not a landlord.");
-
-            user.Landlord_Status = 2; 
-            await _db.SaveChangesAsync();
-
-            return Ok("Landlord rejected successfully.");
-        }
-
-        [HttpDelete("delete-rejected-landlords")]
-        public async Task<IActionResult> DeleteRejectedLandlords()
-        {
-            var rejectedLandlords = await _db.Users
-                .Where(u => u.role == 2 && u.Landlord_Status == 2)
-                .ToListAsync();
-
-            if (!rejectedLandlords.Any())
-                return NotFound("No rejected landlords found.");
-
-            _db.Users.RemoveRange(rejectedLandlords);
-            await _db.SaveChangesAsync();
-
-            return Ok($"{rejectedLandlords.Count} rejected landlord(s) deleted.");
-        }
-
+       
 
 
     }
