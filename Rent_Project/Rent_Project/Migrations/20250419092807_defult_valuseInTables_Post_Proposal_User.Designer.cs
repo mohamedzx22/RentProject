@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent_Project.Model;
 
@@ -11,9 +12,11 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    partial class RentAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419092807_defult_valuseInTables_Post_Proposal_User")]
+    partial class defult_valuseInTables_Post_Proposal_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,12 +72,11 @@ namespace Rent_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Landlord_id")
+                    b.Property<int>("LandlordId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Landlord_name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Landlord_name")
+                        .HasColumnType("int");
 
                     b.Property<int>("Number_of_viewers")
                         .HasColumnType("int");
@@ -85,6 +87,9 @@ namespace Rent_Project.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("User_id")
+                        .HasColumnType("int");
 
                     b.Property<string>("images")
                         .IsRequired()
@@ -101,7 +106,7 @@ namespace Rent_Project.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Landlord_id");
+                    b.HasIndex("LandlordId");
 
                     b.ToTable("Posts");
                 });
@@ -221,7 +226,7 @@ namespace Rent_Project.Migrations
                 {
                     b.HasOne("Rent_Project.Model.User", "Landlord")
                         .WithMany("Posts")
-                        .HasForeignKey("Landlord_id")
+                        .HasForeignKey("LandlordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

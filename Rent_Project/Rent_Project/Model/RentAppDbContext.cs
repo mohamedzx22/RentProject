@@ -64,6 +64,18 @@ namespace Rent_Project.Model
                 .WithMany(u => u.Proposals)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+               .Property(u => u.Landlord_Status)
+               .HasDefaultValue(0);
+
+            modelBuilder.Entity<Post>()
+               .Property(u => u.Accsepted_Status)
+               .HasDefaultValue(0);
+
+            modelBuilder.Entity<Proposal>()
+               .Property(u => u.Status)
+               .HasDefaultValue(0);
         }
     }
 

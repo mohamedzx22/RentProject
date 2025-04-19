@@ -8,7 +8,7 @@ namespace Rent_Project.Model
         public int id { get; set; }
         public string name { get; set; }
         public string Document { get; set; }
-        public int Status { get; set; }//0-accept  1-reject
+        public int Status { get; set; } //0-Waiting 1-accept  2-reject
         public int Phone { get; set; }
         public int PostId { get; set; }
         [ForeignKey("PostId")]
