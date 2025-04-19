@@ -7,18 +7,13 @@ namespace Rent_Project.Model
     {
         public int id { get; set; }
         public string name { get; set; }
-<<<<<<< HEAD
-        public string Document { get; set; }
-        public int Status { get; set; } //0-Waiting 1-accept  2-reject
-=======
-        public byte[] Document { get; set; }
-        public int Status { get; set; }//0-accept  1-reject
-<<<<<<< HEAD
-        public string Phone { get; set; }
-=======
->>>>>>> 56cf429a6e5be686436d3e32ee68dbca3266a30f
-        public int Phone { get; set; }
->>>>>>> ef6f1c7bf7d211d8433abd283df6bec07687ce87
+
+        public byte[] Document { get; set; } 
+
+        public int Status { get; set; } // 0-Waiting, 1-accept, 2-reject
+
+        public string Phone { get; set; } 
+
         public int PostId { get; set; }
         [ForeignKey("PostId")]
         public virtual Post PostNum { get; set; }
@@ -26,7 +21,5 @@ namespace Rent_Project.Model
         public int UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual User UserNum { get; set; }
-
-
     }
 }

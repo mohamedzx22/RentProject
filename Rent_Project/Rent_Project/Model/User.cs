@@ -15,13 +15,8 @@ namespace Rent_Project.Model
  
 
         [Column(TypeName = "nvarchar(10)")]
-        
-
         public string password { get; set; }
-       
- 
       
- 
         public string number { get; set; }
         public string email { get; set; }
         public int role { get; set; }//1-Admin  2-Landlord  3-Tenant

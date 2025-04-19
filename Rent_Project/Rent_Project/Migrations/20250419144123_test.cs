@@ -5,7 +5,7 @@
 namespace Rent_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class alterposttable : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,6 +26,30 @@ namespace Rent_Project.Migrations
                 name: "User_id",
                 table: "Posts",
                 newName: "Landlord_id");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "number",
+                table: "Users",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(50)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Phone",
+                table: "Proposals",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
+            migrationBuilder.AlterColumn<byte[]>(
+                name: "Document",
+                table: "Proposals",
+                type: "varbinary(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Landlord_name",
@@ -64,6 +88,30 @@ namespace Rent_Project.Migrations
                 name: "Landlord_id",
                 table: "Posts",
                 newName: "User_id");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "number",
+                table: "Users",
+                type: "nvarchar(50)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Phone",
+                table: "Proposals",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Document",
+                table: "Proposals",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(byte[]),
+                oldType: "varbinary(max)");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Landlord_name",
