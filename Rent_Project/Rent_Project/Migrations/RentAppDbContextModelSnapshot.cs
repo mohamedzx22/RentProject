@@ -49,7 +49,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Masseges");
+                    b.ToTable("Masseges", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Post", b =>
@@ -103,7 +103,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("LandlordId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Proposal", b =>
@@ -140,7 +140,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Proposals");
+                    b.ToTable("Proposals", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
@@ -155,7 +155,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Save_Posts");
+                    b.ToTable("Save_Posts", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
@@ -177,26 +177,18 @@ namespace Rent_Project.Migrations
 
                     b.Property<string>("number")
                         .IsRequired()
-<<<<<<< HEAD
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)");
-=======
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
->>>>>>> 0cefbd8 (addPost,Put)
 
                     b.Property<int>("role")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>

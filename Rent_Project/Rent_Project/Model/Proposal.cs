@@ -9,7 +9,7 @@ namespace Rent_Project.Model
         public string name { get; set; }
         public byte[] Document { get; set; }
         public int Status { get; set; }//0-accept  1-reject
-        public int Phone { get; set; }
+        public string Phone { get; set; }
         public int PostId { get; set; }
         [ForeignKey("PostId")]
         public virtual Post PostNum { get; set; }

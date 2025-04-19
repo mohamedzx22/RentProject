@@ -79,7 +79,7 @@ namespace Rent_Project.Controllers
             //    issuer:""
 
 
-            return Ok("Login  Suu=ccessful");
+            return Ok("Login  Successful");
 
         }
 

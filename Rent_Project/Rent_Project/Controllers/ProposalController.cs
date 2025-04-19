@@ -20,6 +20,7 @@ namespace Rent_Project.Controllers
         {
             using var stream = new MemoryStream();
             await p.Document.CopyToAsync( stream );
+
             var proposal = new Proposal
             {
                 name = p.name,
