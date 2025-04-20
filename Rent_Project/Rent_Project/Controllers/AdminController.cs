@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rent_Project.Model;
+using static Rent_Project.DTO.AdminDto;
 
 namespace Rent_Project.Controllers
 {
@@ -15,89 +16,159 @@ namespace Rent_Project.Controllers
             _db = db;
         }
 
+        [HttpGet("all-landlords")]
+        public async Task<IActionResult> GetLandlords()
+        {
+            var landlords = await _db.Landlords
+                .Include(l => l.User)
+                .Select(l => new LandlordDtoForAdmin
+                {
+                    Id = l.User.id,
+                    Name = l.User.name,
+                    Email = l.User.email,
+                    Number = l.User.number,
+                    LandlordStatus = l.Status,
+                })
+                .ToListAsync();
+
+            return Ok(landlords);
+        }
         [HttpGet("pending-landlords")]
         public async Task<IActionResult> GetPendingLandlords()
         {
-            var pendingLandlords = await _db.Users
-                .Where(u => u.role == 2 && u.Landlord_Status == 0)
-                .Select(u => new {
-                    u.id,
-                    u.name,
-                    u.email,
-                    u.number
+            var pendingLandlords = await _db.Landlords
+                .Include(l => l.User)
+                .Where( l => l.Status == 0)
+                .Select(l => new LandlordDtoForAdmin
+                {
+                    Id = l.User.id,
+                    Name = l.User.name,
+                    Email = l.User.email,
+                    Number = l.User.number,
+                    LandlordStatus = l.Status,
                 })
-               .ToListAsync();
+                .ToListAsync();
 
             return Ok(pendingLandlords);
         }
 
-
-        [HttpPost("approve-landlord/{id}")]
-        public async Task<IActionResult> ApproveLandlord(int id)
+        // Get Accepted
+        [HttpGet("accepted-landlords")]
+        public async Task<IActionResult> GetAcceptedLandlords()
         {
-            var user = await _db.Users.FindAsync(id);
+            var acceptedLandlords = await _db.Landlords
+                .Include(l => l.User)
+                .Where(l => l.Status == 1)
+                .Select(l => new LandlordDtoForAdmin
+                {
+                    Id = l.User.id,
+                    Name = l.User.name,
+                    Email = l.User.email,
+                    Number = l.User.number,
+                    LandlordStatus = l.Status,
+                })
+                .ToListAsync();
 
-            if (user == null || user.role != 2)
-                return NotFound("User not found or not a landlord.");
+            return Ok(acceptedLandlords);
+        }
 
-            user.Landlord_Status = 1;
+        // Approve
+        [HttpPut("approve-landlord")]
+        public async Task<IActionResult> ApproveLandlord([FromBody] LandlordActionDto dto)
+        {
+            var landlord = await _db.Landlords
+                 .FirstOrDefaultAsync(l => l.UserId == dto.Id);
+
+            if (landlord == null)
+                return NotFound("Landlord not found.");
+
+            landlord.Status = 1;
             await _db.SaveChangesAsync();
 
             return Ok("Landlord approved successfully.");
         }
 
-        [HttpPost("reject-landlord/{id}")]
-        public async Task<IActionResult> RejectLandlord(int id)
+        // Reject
+        [HttpPut("reject-landlord")]
+        public async Task<IActionResult> RejectLandlord([FromBody] LandlordActionDto dto)
         {
-            var user = await _db.Users.FindAsync(id);
+            var landlord = await _db.Landlords
+                .FirstOrDefaultAsync(l => l.UserId == dto.Id);
 
-            if (user == null || user.role != 2)
-                return NotFound("User not found or not a landlord.");
+            if (landlord == null)
+                return NotFound("Landlord not found.");
 
-            user.Landlord_Status = 2;
+            landlord.Status = 2;
             await _db.SaveChangesAsync();
 
             return Ok("Landlord rejected successfully.");
         }
 
+        // Delete Rejected
         [HttpDelete("delete-rejected-landlords")]
         public async Task<IActionResult> DeleteRejectedLandlords()
         {
-            var rejectedLandlords = await _db.Users
-                .Where(u => u.role == 2 && u.Landlord_Status == 2)
+            var rejectedLandlords = await _db.Landlords
+                .Include(l => l.User)
+                .Where(l => l.Status == 2)
                 .ToListAsync();
 
-            if (!rejectedLandlords.Any())
+            if (rejectedLandlords.Count == 0)
                 return NotFound("No rejected landlords found.");
 
-            _db.Users.RemoveRange(rejectedLandlords);
-            await _db.SaveChangesAsync();
+            _db.Users.RemoveRange(rejectedLandlords.Select(l => l.User));
+            var deletedCount = await _db.SaveChangesAsync();
 
-            return Ok($"{rejectedLandlords.Count} rejected landlord(s) deleted.");
+            return Ok($"{deletedCount} rejected landlord(s) deleted.");
         }
 
-        [HttpGet("pending-Posts")]
-        public async Task<IActionResult> GetPendingPosts()
+        [HttpGet("All-posts")]
+        public async Task<IActionResult> GetPosts()
         {
             var pendingPosts = await _db.Posts
-                .Where(L => L.Accsepted_Status == 0)
-                .Select(L => new
+                .Select(p => new PostSummaryDto
                 {
-                    L.Title,
-                    L.Description,
-                    L.location,
-                    L.Price,
-                    L.rental_status,
-                    L.Number_of_viewers,
-                    L.Landlord_name,
-                    L.images,
+                    PostId = p.id,
+                    Title = p.Title,
+                    Description = p.Description,
+                    Location = p.location,
+                    Price = p.Price,
+                    RentalStatus = p.rental_status,
+                    NumberOfViewers = p.Number_of_viewers,
+                    LandlordName = p.Landlord_name,
+                    Images = p.images,
+                    AccseptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
 
             return Ok(pendingPosts);
         }
 
-        [HttpPost("approve-Posts/{id}")]
+        [HttpGet("pending-posts")]
+        public async Task<IActionResult> GetPendingPosts()
+        {
+            var pendingPosts = await _db.Posts
+                .Where(p => p.Accsepted_Status == 0)
+                .Select(p => new PostSummaryDto
+                {
+                    PostId = p.id,
+                    Title = p.Title,
+                    Description = p.Description,
+                    Location = p.location,
+                    Price = p.Price,
+                    RentalStatus = p.rental_status,
+                    NumberOfViewers = p.Number_of_viewers,
+                    LandlordName = p.Landlord_name,
+                    Images = p.images,
+                    AccseptedStatus = p.Accsepted_Status
+                })
+                .ToListAsync();
+
+            return Ok(pendingPosts);
+        }
+
+
+        [HttpPut("approve-Posts/{id}")]
         public async Task<IActionResult> ApprovePosts(int id)
         {
             var Posts = await _db.Posts.FindAsync(id);
@@ -111,7 +182,7 @@ namespace Rent_Project.Controllers
             return Ok("Post approved successfully.");
         }
 
-        [HttpPost("reject-post/{id}")]
+        [HttpPut("reject-post/{id}")]
         public async Task<IActionResult> RejectPost(int id)
         {
             var post = await _db.Posts.FindAsync(id);

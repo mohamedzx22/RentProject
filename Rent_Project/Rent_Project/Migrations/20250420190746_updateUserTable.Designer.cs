@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent_Project.Model;
 
@@ -11,9 +12,11 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    partial class RentAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250420190746_updateUserTable")]
+    partial class updateUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,28 +24,6 @@ namespace Rent_Project.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Rent_Project.Model.Landlord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Landlords");
-                });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
                 {
@@ -216,17 +197,6 @@ namespace Rent_Project.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Rent_Project.Model.Landlord", b =>
-                {
-                    b.HasOne("Rent_Project.Model.User", "User")
-                        .WithOne("Landlord")
-                        .HasForeignKey("Rent_Project.Model.Landlord", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
                 {
                     b.HasOne("Rent_Project.Model.User", "Receiver")
@@ -304,9 +274,6 @@ namespace Rent_Project.Migrations
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
-                    b.Navigation("Landlord")
-                        .IsRequired();
-
                     b.Navigation("Posts");
 
                     b.Navigation("Proposals");

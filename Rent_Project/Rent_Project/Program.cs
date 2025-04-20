@@ -35,8 +35,9 @@ namespace Rent_Project
                 builder.Services.AddControllers();
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGen();
+                builder.Services.AddScoped<MessageService>();
 
-                builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
                 var app = builder.Build();
 
 

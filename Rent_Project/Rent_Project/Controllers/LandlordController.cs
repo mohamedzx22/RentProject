@@ -29,22 +29,41 @@ namespace Rent_Project.Controllers
 
             return Ok(landlords);
         }
-
         [HttpPost]
-        public async Task<IActionResult> AddLandlord(String name, String pass, String num, String mail, int role)
+        public async Task<IActionResult> AddLandlord(string name, string pass, string num, string mail)
         {
-            User Landlord = new User();
+            // 1. إنشاء User
+            var user = new User
             {
-                Landlord.name = name;
-                Landlord.password = pass;
-                Landlord.number = num;
-                Landlord.email = mail;
-                Landlord.role = role;
-            }
-            await _db.Users.AddAsync(Landlord);
-            _db.SaveChanges();
-            return Ok(Landlord);
+                name = name,
+                password = pass,
+                number = num,
+                email = mail,
+                role = 2 // 2 = Landlord
+            };
+
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync(); // نحفظ عشان نجيب Id
+
+            // 2. إنشاء Landlord وربطه بالـ User
+            var landlord = new Landlord
+            {
+                UserId = user.id, // استخدم UserId كـ FK
+                Status = 0
+            };
+
+            await _db.Landlords.AddAsync(landlord);
+            await _db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Message = "Landlord added successfully.",
+                LandlordId = landlord.Id,
+                LinkedUserId = landlord.UserId
+            });
         }
+
+
 
         [HttpPut]
         public async Task<IActionResult> UpdateLandlord(User Landlord)
