@@ -8,11 +8,13 @@ namespace Rent_Project.Model
         public int id { get; set; }
         public string name { get; set; }
 
-        public byte[] Document { get; set; } 
+        public int Status { get; set; } //0-Waiting 1-accept  2-reject
 
-        public int Status { get; set; } // 0-Waiting, 1-accept, 2-reject
+        public byte[] Document { get; set; }
 
-        public string Phone { get; set; } 
+
+        public string Phone { get; set; }
+
 
         public int PostId { get; set; }
         [ForeignKey("PostId")]
@@ -21,5 +23,7 @@ namespace Rent_Project.Model
         public int UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual User UserNum { get; set; }
+
+
     }
 }

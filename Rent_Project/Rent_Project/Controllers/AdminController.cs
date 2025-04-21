@@ -121,7 +121,7 @@ namespace Rent_Project.Controllers
 
             return Ok($"{deletedCount} rejected landlord(s) deleted.");
         }
-
+        
         [HttpGet("All-posts")]
         public async Task<IActionResult> GetPosts()
         {
@@ -136,7 +136,7 @@ namespace Rent_Project.Controllers
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    Images = p.images,
+                    Images = p.images != null ? Convert.ToBase64String(p.images) : null,
                     AccseptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
@@ -159,14 +159,14 @@ namespace Rent_Project.Controllers
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    Images = p.images,
+                    Images = p.images != null ? Convert.ToBase64String(p.images) : null, 
                     AccseptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
 
             return Ok(pendingPosts);
         }
-
+        
 
         [HttpPut("approve-Posts/{id}")]
         public async Task<IActionResult> ApprovePosts(int id)
