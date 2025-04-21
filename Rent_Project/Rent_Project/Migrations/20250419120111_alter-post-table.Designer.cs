@@ -12,8 +12,8 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250419145229_testt")]
-    partial class testt
+    [Migration("20250419120111_alter-post-table")]
+    partial class alterposttable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,13 +117,12 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<byte[]>("Document")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Phone")
+                    b.Property<string>("Document")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Phone")
+                        .HasColumnType("int");
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
@@ -188,7 +187,7 @@ namespace Rent_Project.Migrations
 
                     b.Property<string>("number")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("password")
                         .IsRequired()

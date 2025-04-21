@@ -12,8 +12,8 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250419144123_test")]
-    partial class test
+    [Migration("20250421085242_alter-tables")]
+    partial class altertables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,28 @@ namespace Rent_Project.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Rent_Project.Model.Landlord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Landlords");
+                });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
                 {
@@ -86,10 +108,6 @@ namespace Rent_Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("images")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -172,11 +190,6 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int?>("Landlord_Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -200,6 +213,17 @@ namespace Rent_Project.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Rent_Project.Model.Landlord", b =>
+                {
+                    b.HasOne("Rent_Project.Model.User", "User")
+                        .WithOne("Landlord")
+                        .HasForeignKey("Rent_Project.Model.Landlord", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
@@ -279,6 +303,9 @@ namespace Rent_Project.Migrations
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
+                    b.Navigation("Landlord")
+                        .IsRequired();
+
                     b.Navigation("Posts");
 
                     b.Navigation("Proposals");

@@ -12,8 +12,8 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250417154939_Post-table")]
-    partial class Posttable
+    [Migration("20250419192117_Last")]
+    partial class Last
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,17 +64,20 @@ namespace Rent_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<int>("Accsepted_Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LandlordId")
+                    b.Property<int>("Landlord_id")
                         .HasColumnType("int");
 
-                    b.Property<int>("Landlord_name")
-                        .HasColumnType("int");
+                    b.Property<string>("Landlord_name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Number_of_viewers")
                         .HasColumnType("int");
@@ -85,9 +88,6 @@ namespace Rent_Project.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("User_id")
-                        .HasColumnType("int");
 
                     b.Property<string>("images")
                         .IsRequired()
@@ -104,9 +104,64 @@ namespace Rent_Project.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("LandlordId");
+                    b.HasIndex("Landlord_id");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("Rent_Project.Model.Proposal", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<byte[]>("Document")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Proposals");
+                });
+
+            modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
+                {
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PostId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Save_Posts");
                 });
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
@@ -117,6 +172,11 @@ namespace Rent_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
+                    b.Property<int?>("Landlord_Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -126,11 +186,13 @@ namespace Rent_Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("number")
-                        .HasColumnType("int");
+                    b.Property<string>("number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("password")
-                        .HasColumnType("int");
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("role")
                         .HasColumnType("int");
@@ -163,18 +225,67 @@ namespace Rent_Project.Migrations
                 {
                     b.HasOne("Rent_Project.Model.User", "Landlord")
                         .WithMany("Posts")
-                        .HasForeignKey("LandlordId")
+                        .HasForeignKey("Landlord_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Landlord");
                 });
 
+            modelBuilder.Entity("Rent_Project.Model.Proposal", b =>
+                {
+                    b.HasOne("Rent_Project.Model.Post", "PostNum")
+                        .WithMany("Proposals")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rent_Project.Model.User", "UserNum")
+                        .WithMany("Proposals")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PostNum");
+
+                    b.Navigation("UserNum");
+                });
+
+            modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
+                {
+                    b.HasOne("Rent_Project.Model.Post", "Post")
+                        .WithMany("Save_Posts")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rent_Project.Model.User", "Rentant")
+                        .WithMany("Save_Posts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Rentant");
+                });
+
+            modelBuilder.Entity("Rent_Project.Model.Post", b =>
+                {
+                    b.Navigation("Proposals");
+
+                    b.Navigation("Save_Posts");
+                });
+
             modelBuilder.Entity("Rent_Project.Model.User", b =>
                 {
                     b.Navigation("Posts");
 
+                    b.Navigation("Proposals");
+
                     b.Navigation("ReceivedMessages");
+
+                    b.Navigation("Save_Posts");
 
                     b.Navigation("SentMessages");
                 });
