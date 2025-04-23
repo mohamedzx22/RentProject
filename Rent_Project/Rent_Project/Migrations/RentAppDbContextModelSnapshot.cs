@@ -41,7 +41,7 @@ namespace Rent_Project.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Landlords");
+                    b.ToTable("Landlords", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Message", b =>
@@ -71,7 +71,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Masseges");
+                    b.ToTable("Masseges", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Post", b =>
@@ -125,7 +125,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("Landlord_id");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Proposal", b =>
@@ -165,7 +165,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Proposals");
+                    b.ToTable("Proposals", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
@@ -180,7 +180,7 @@ namespace Rent_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Save_Posts");
+                    b.ToTable("Save_Posts", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.User", b =>
@@ -213,7 +213,7 @@ namespace Rent_Project.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Rent_Project.Model.Landlord", b =>

@@ -13,7 +13,7 @@ namespace Rent_Project.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "password",
                 table: "Users",
-                type: "nvarchar(10)",
+                type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");

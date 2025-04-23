@@ -22,22 +22,31 @@ namespace Rent_Project.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto dto)
+        public async Task<IActionResult> Register([FromForm] RegisterDto dto)
         {
             var result = await _accountService.RegisterAsync(dto);
-            if (result == "Registered Successfully")
-                return Ok(result);
-            return BadRequest(result);
+            if (result is string  )
+                return BadRequest(result);
+            return Ok(result+ "Registered Successfully");
+            
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromForm] LoginDto dto)
         {
             var result = await _accountService.LoginAsync(dto);
-            if (result == "Login Successful")
-                return Ok(result);
-            return BadRequest(result);
+            if (result is string)
+            {
+                return BadRequest(result);
+            }
+
+
+
+
+                return Ok("login Successfully"+result);
+           
         }
+
 
 
     }

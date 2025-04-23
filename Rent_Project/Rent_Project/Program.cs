@@ -29,6 +29,10 @@ namespace Rent_Project
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<ProposalService>();
+            builder.Services.AddScoped<ProposalRepository>();
+
+
 
 
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

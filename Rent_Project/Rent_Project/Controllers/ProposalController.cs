@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rent_Project.DTO;
 using Rent_Project.Model;
+using Rent_Project.Services;
 
 namespace Rent_Project.Controllers
 {
@@ -10,32 +11,22 @@ namespace Rent_Project.Controllers
     [ApiController]
     public class ProposalController : ControllerBase
     {
-        private readonly RentAppDbContext _context;
-        public ProposalController(RentAppDbContext db) {
+        private readonly ProposalService _proposalService;
 
-            _context = db;
-        }
-        [HttpPost]
-        public async Task<IActionResult>AddProposal([FromForm]ProposalDto p )
+        public ProposalController(ProposalService proposalService)
         {
-            using var stream = new MemoryStream();
-            await p.Document.CopyToAsync( stream );
-
-            var proposal = new Proposal
-            {
-                name = p.name,
-                Phone = p.Phone,
-                PostId = p.PostId,
-                UserId = p.UserId,
-                Document= stream.ToArray()
-            };
-            await _context.AddAsync(proposal);
-            await _context.SaveChangesAsync();
-            return Ok(proposal);
-
-
+            _proposalService = proposalService;
         }
-    
+
+        [HttpPost]
+        public async Task<IActionResult> Addproposal([FromForm] ProposalDto dto)
+        {
+            var result = await _proposalService.AddProposal(dto);
+            if (result == "Done")
+                return Ok(result);
+            return BadRequest(result);
+        }
+
 
     }
 }

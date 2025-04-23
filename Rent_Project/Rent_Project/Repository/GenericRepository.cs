@@ -29,13 +29,13 @@ namespace Rent_Project.Repository
             await _context.SaveChangesAsync();
         }
 
-        public void Update(T entity)
+        public async Task  Update(T entity)
         {
             _table.Update(entity);
             _context.SaveChanges();
         }
 
-        public void Delete(T entity)
+        public async Task Delete(T entity)
         {
             _table.Remove(entity);
             _context.SaveChanges();
