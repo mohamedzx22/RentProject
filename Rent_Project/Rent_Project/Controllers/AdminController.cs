@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿// Controllers/AdminController.cs
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Rent_Project.Model;
-using static Rent_Project.DTO.AdminDto;
+using Rent_Project.DTO;
+using Rent_Project.Repository;
 
 namespace Rent_Project.Controllers
 {
@@ -10,206 +9,81 @@ namespace Rent_Project.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly RentAppDbContext _db;
-        public AdminController(RentAppDbContext db)
+        private readonly IUserRepository _userRepo;
+        private readonly IPostRepository _postRepo;
+
+        public AdminController(IUserRepository userRepo, IPostRepository postRepo)
         {
-            _db = db;
+            _userRepo = userRepo;
+            _postRepo = postRepo;
         }
 
         [HttpGet("all-landlords")]
         public async Task<IActionResult> GetLandlords()
-        {
-            var landlords = await _db.Landlords
-                .Include(l => l.User)
-                .Select(l => new LandlordDtoForAdmin
-                {
-                    Id = l.User.id,
-                    Name = l.User.name,
-                    Email = l.User.email,
-                    Number = l.User.number,
-                    LandlordStatus = l.Status,
-                })
-                .ToListAsync();
+            => Ok(await _userRepo.GetAllLandlordsAsync());
 
-            return Ok(landlords);
-        }
         [HttpGet("pending-landlords")]
-        public async Task<IActionResult> GetPendingLandlords()
-        {
-            var pendingLandlords = await _db.Landlords
-                .Include(l => l.User)
-                .Where( l => l.Status == 0)
-                .Select(l => new LandlordDtoForAdmin
-                {
-                    Id = l.User.id,
-                    Name = l.User.name,
-                    Email = l.User.email,
-                    Number = l.User.number,
-                    LandlordStatus = l.Status,
-                })
-                .ToListAsync();
+        public async Task<IActionResult> GetPending()
+            => Ok(await _userRepo.GetPendingLandlordsAsync());
 
-            return Ok(pendingLandlords);
-        }
-
-        // Get Accepted
         [HttpGet("accepted-landlords")]
-        public async Task<IActionResult> GetAcceptedLandlords()
-        {
-            var acceptedLandlords = await _db.Landlords
-                .Include(l => l.User)
-                .Where(l => l.Status == 1)
-                .Select(l => new LandlordDtoForAdmin
-                {
-                    Id = l.User.id,
-                    Name = l.User.name,
-                    Email = l.User.email,
-                    Number = l.User.number,
-                    LandlordStatus = l.Status,
-                })
-                .ToListAsync();
+        public async Task<IActionResult> GetAccepted()
+            => Ok(await _userRepo.GetAcceptedLandlordsAsync());
 
-            return Ok(acceptedLandlords);
-        }
-
-        // Approve
         [HttpPut("approve-landlord")]
-        public async Task<IActionResult> ApproveLandlord([FromBody] LandlordActionDto dto)
+        public async Task<IActionResult> Approve([FromBody] LandlordActionDto dto)
         {
-            var landlord = await _db.Landlords
-                 .FirstOrDefaultAsync(l => l.UserId == dto.Id);
-
-            if (landlord == null)
+            if (!await _userRepo.ApproveLandlordAsync(dto.Id))
                 return NotFound("Landlord not found.");
-
-            landlord.Status = 1;
-            await _db.SaveChangesAsync();
-
             return Ok("Landlord approved successfully.");
         }
 
-        // Reject
         [HttpPut("reject-landlord")]
-        public async Task<IActionResult> RejectLandlord([FromBody] LandlordActionDto dto)
+        public async Task<IActionResult> Reject([FromBody] LandlordActionDto dto)
         {
-            var landlord = await _db.Landlords
-                .FirstOrDefaultAsync(l => l.UserId == dto.Id);
-
-            if (landlord == null)
+            if (!await _userRepo.RejectLandlordAsync(dto.Id))
                 return NotFound("Landlord not found.");
-
-            landlord.Status = 2;
-            await _db.SaveChangesAsync();
-
             return Ok("Landlord rejected successfully.");
         }
 
-        // Delete Rejected
         [HttpDelete("delete-rejected-landlords")]
-        public async Task<IActionResult> DeleteRejectedLandlords()
+        public async Task<IActionResult> DeleteRejected()
         {
-            var rejectedLandlords = await _db.Landlords
-                .Include(l => l.User)
-                .Where(l => l.Status == 2)
-                .ToListAsync();
-
-            if (rejectedLandlords.Count == 0)
-                return NotFound("No rejected landlords found.");
-
-            _db.Users.RemoveRange(rejectedLandlords.Select(l => l.User));
-            var deletedCount = await _db.SaveChangesAsync();
-
-            return Ok($"{deletedCount} rejected landlord(s) deleted.");
+            var count = await _userRepo.DeleteRejectedLandlordsAsync();
+            if (count == 0) return NotFound("No rejected landlords found.");
+            return Ok($"{count} rejected landlord(s) deleted.");
         }
-        
-        [HttpGet("All-posts")]
+
+        [HttpGet("all-posts")]
         public async Task<IActionResult> GetPosts()
-        {
-            var pendingPosts = await _db.Posts
-                .Select(p => new PostSummaryDto
-                {
-                    PostId = p.id,
-                    Title = p.Title,
-                    Description = p.Description,
-                    Location = p.location,
-                    Price = p.Price,
-                    RentalStatus = p.rental_status,
-                    NumberOfViewers = p.Number_of_viewers,
-                    LandlordName = p.Landlord_name,
-                    Images = p.images != null ? Convert.ToBase64String(p.images) : null,
-                    AccseptedStatus = p.Accsepted_Status
-                })
-                .ToListAsync();
-
-            return Ok(pendingPosts);
-        }
+            => Ok(await _postRepo.GetAllPostsAsync());
 
         [HttpGet("pending-posts")]
         public async Task<IActionResult> GetPendingPosts()
+            => Ok(await _postRepo.GetPendingPostsAsync());
+
+        [HttpPut("approve-post")]
+        public async Task<IActionResult> ApprovePost([FromBody] PostActionDto dto)
         {
-            var pendingPosts = await _db.Posts
-                .Where(p => p.Accsepted_Status == 0)
-                .Select(p => new PostSummaryDto
-                {
-                    PostId = p.id,
-                    Title = p.Title,
-                    Description = p.Description,
-                    Location = p.location,
-                    Price = p.Price,
-                    RentalStatus = p.rental_status,
-                    NumberOfViewers = p.Number_of_viewers,
-                    LandlordName = p.Landlord_name,
-                    Images = p.images != null ? Convert.ToBase64String(p.images) : null, 
-                    AccseptedStatus = p.Accsepted_Status
-                })
-                .ToListAsync();
-
-            return Ok(pendingPosts);
-        }
-        
-
-        [HttpPut("approve-Posts/{id}")]
-        public async Task<IActionResult> ApprovePosts(int id)
-        {
-            var Posts = await _db.Posts.FindAsync(id);
-
-            if (Posts == null)
-                return NotFound("Post not found .");
-
-            Posts.Accsepted_Status = 1;
-            await _db.SaveChangesAsync();
-
+            if (!await _postRepo.ApprovePostAsync(dto.Id))
+                return NotFound("Post not found.");
             return Ok("Post approved successfully.");
         }
 
-        [HttpPut("reject-post/{id}")]
-        public async Task<IActionResult> RejectPost(int id)
+        [HttpPut("reject-post")]
+        public async Task<IActionResult> RejectPost([FromBody] PostActionDto dto)
         {
-            var post = await _db.Posts.FindAsync(id);
-
-            if (post == null)
+            if (!await _postRepo.RejectPostAsync(dto.Id))
                 return NotFound("Post not found.");
-
-            post.Accsepted_Status = 2;
-            await _db.SaveChangesAsync();
-
             return Ok("Post rejected successfully.");
         }
 
         [HttpDelete("delete-rejected-posts")]
         public async Task<IActionResult> DeleteRejectedPosts()
         {
-
-            var rejectedPosts = await _db.Posts.Where(p => p.Accsepted_Status == 2).ToListAsync();
-
-            if (rejectedPosts.Count == 0)
-                return NotFound("No rejected posts found.");
-
-            _db.Posts.RemoveRange(rejectedPosts);
-            await _db.SaveChangesAsync();
-
+            var count = await _postRepo.DeleteRejectedPostsAsync();
+            if (count == 0) return NotFound("No rejected posts found.");
             return Ok("All rejected posts deleted successfully.");
         }
-
     }
 }

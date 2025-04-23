@@ -2,6 +2,7 @@
 using Rent_Project.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Rent_Project.DTO;
 
 
 namespace Rent_Project.Repository
@@ -38,13 +39,13 @@ namespace Rent_Project.Repository
             await _context.SaveChangesAsync();
         }
 
-        public void Update(User entity)
+        public async Task UpdateAsync(User entity)
         {
             _context.Users.Update(entity);
             _context.SaveChanges();
         }
 
-        public void Delete(User entity)
+        public async Task DeleteAsync(User entity)
         {
             _context.Users.Remove(entity);
             _context.SaveChanges();
@@ -54,7 +55,82 @@ namespace Rent_Project.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.email == email);
         }
+
+        public async Task<List<LandlordDtoForAdmin>> GetAllLandlordsAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Landlord)
+                .Where(u => u.Landlord != null)
+                .Select(u => new LandlordDtoForAdmin
+                {
+                    Name = u.name,
+                    Email = u.email,
+                    LandlordStatus = u.Landlord.Status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<LandlordDtoForAdmin>> GetPendingLandlordsAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Landlord)
+                .Where(u => u.Landlord != null && u.Landlord.Status == 0)
+                .Select(u => new LandlordDtoForAdmin
+                {
+                    Name = u.name,
+                    Email = u.email,
+                    LandlordStatus = u.Landlord.Status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<LandlordDtoForAdmin>> GetAcceptedLandlordsAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Landlord)
+                .Where(u => u.Landlord != null && u.Landlord.Status == 1)
+                .Select(u => new LandlordDtoForAdmin
+                {
+                    Name = u.name,
+                    Email = u.email,
+                    LandlordStatus = u.Landlord.Status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<bool> ApproveLandlordAsync(int landlordUserId)
+        {
+            var landlord = await _context.Landlords
+                .FirstOrDefaultAsync(l => l.UserId == landlordUserId);
+            if (landlord == null) return false;
+            landlord.Status = 1;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RejectLandlordAsync(int landlordUserId)
+        {
+            var landlord = await _context.Landlords
+                .FirstOrDefaultAsync(l => l.UserId == landlordUserId);
+            if (landlord == null) return false;
+            landlord.Status = 2;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<int> DeleteRejectedLandlordsAsync()
+        {
+            var rejected = await _context.Landlords
+                .Include(l => l.User)
+                .Where(l => l.Status == 2)
+                .ToListAsync();
+            if (!rejected.Any()) return 0;
+            _context.Users.RemoveRange(rejected.Select(l => l.User));
+            return await _context.SaveChangesAsync();
+        }
     }
 }
+    
+
     
 

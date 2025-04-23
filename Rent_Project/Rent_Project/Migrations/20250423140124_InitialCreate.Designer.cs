@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent_Project.Model;
 
@@ -11,9 +12,11 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    partial class RentAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250423140124_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,8 +209,8 @@ namespace Rent_Project.Migrations
 
                     b.Property<string>("password")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("role")
                         .HasColumnType("int");

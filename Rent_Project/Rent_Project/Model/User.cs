@@ -12,16 +12,9 @@ namespace Rent_Project.Model
 
         [MaxLength(50)]
         public string name { get; set; }
- 
 
-        [Column(TypeName = "nvarchar(10)")]
-        
-
+        [MaxLength(256)]
         public string password { get; set; }
-       
- 
-      
- 
         public string number { get; set; }
         public string email { get; set; }
         public int role { get; set; }//1-Admin  2-Landlord  3-Tenant

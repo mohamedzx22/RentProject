@@ -17,9 +17,7 @@ namespace Rent_Project
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<RentAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
-
- 
+           
 
                 builder.Services.AddControllers();
                 builder.Services.AddEndpointsApiExplorer();
@@ -29,6 +27,8 @@ namespace Rent_Project
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
 
 
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
