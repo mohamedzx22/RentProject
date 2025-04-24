@@ -108,9 +108,9 @@ namespace Rent_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("images")
+                    b.Property<string>("images")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("location")
                         .IsRequired()
@@ -168,6 +168,34 @@ namespace Rent_Project.Migrations
                     b.ToTable("Proposals");
                 });
 
+            modelBuilder.Entity("Rent_Project.Model.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -206,8 +234,8 @@ namespace Rent_Project.Migrations
 
                     b.Property<string>("password")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("role")
                         .HasColumnType("int");
@@ -277,6 +305,17 @@ namespace Rent_Project.Migrations
                     b.Navigation("UserNum");
                 });
 
+            modelBuilder.Entity("Rent_Project.Model.RefreshToken", b =>
+                {
+                    b.HasOne("Rent_Project.Model.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Rent_Project.Model.Save_Post", b =>
                 {
                     b.HasOne("Rent_Project.Model.Post", "Post")
@@ -313,6 +352,8 @@ namespace Rent_Project.Migrations
                     b.Navigation("Proposals");
 
                     b.Navigation("ReceivedMessages");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Save_Posts");
 

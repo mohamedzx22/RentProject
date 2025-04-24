@@ -1,5 +1,10 @@
 ﻿using Rent_Project.DTO;
 using Rent_Project.Model;
+﻿using Rent_Project.Model;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Rent_Project.Repository
 {
@@ -12,5 +17,8 @@ namespace Rent_Project.Repository
         Task<bool> ApproveLandlordAsync(int landlordUserId);
         Task<bool> RejectLandlordAsync(int landlordUserId);
         Task<int> DeleteRejectedLandlordsAsync();
+
+        RefreshToken GenerateRefreshToken(int userId);
+        
     }
 }

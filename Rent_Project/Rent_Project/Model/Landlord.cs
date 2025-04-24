@@ -8,10 +8,11 @@ namespace Rent_Project.Model
     {
             [Key]
             public int Id { get; set; }
-            [ForeignKey("id")]
+            [ForeignKey("User")]
             public int UserId { get; set; }
-            public int Status { get; set; } // 0:wait 1:accept 2:reject
             public User User { get; set; }
+
+        public int Status { get; set; } // 0:wait 1:accept 2:reject
 
     }
 }

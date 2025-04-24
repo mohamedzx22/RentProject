@@ -1,4 +1,5 @@
 ﻿// Controllers/AdminController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent_Project.DTO;
 using Rent_Project.Repository;
@@ -19,6 +20,7 @@ namespace Rent_Project.Controllers
         }
 
         [HttpGet("all-landlords")]
+        [Authorize]
         public async Task<IActionResult> GetLandlords()
             => Ok(await _userRepo.GetAllLandlordsAsync());
 

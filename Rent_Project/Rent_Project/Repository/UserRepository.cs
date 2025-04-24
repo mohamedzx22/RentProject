@@ -3,6 +3,12 @@ using Rent_Project.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Rent_Project.DTO;
+using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
+
 
 
 namespace Rent_Project.Repository
@@ -39,16 +45,17 @@ namespace Rent_Project.Repository
             await _context.SaveChangesAsync();
         }
 
+
         public async Task UpdateAsync(User entity)
         {
             _context.Users.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(User entity)
         {
             _context.Users.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
@@ -128,6 +135,22 @@ namespace Rent_Project.Repository
             _context.Users.RemoveRange(rejected.Select(l => l.User));
             return await _context.SaveChangesAsync();
         }
+
+        public RefreshToken GenerateRefreshToken(int userId)
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Created = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddDays(7),
+                UserId = userId
+            };
+            _context.RefreshTokens.Add(refreshToken);
+            _context.SaveChanges(); 
+
+            return refreshToken;
+        }
+        
     }
 }
     
