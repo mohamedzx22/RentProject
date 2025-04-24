@@ -18,6 +18,7 @@ namespace Rent_Project.Model
         public DbSet<Save_Post> Save_Posts { get; set; }
         public DbSet<Proposal> Proposals { get; set; }
         public DbSet<Landlord> Landlords { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,7 @@ namespace Rent_Project.Model
                 .HasForeignKey(sp => sp.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             modelBuilder.Entity<Save_Post>()
                 .HasOne(sp => sp.Post)
                 .WithMany(p => p.Save_Posts)
@@ -66,9 +68,7 @@ namespace Rent_Project.Model
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<User>()
-            ////   .Property(u => u.Landlord_Status)
-            //   .HasDefaultValue(0);
+ 
 
             modelBuilder.Entity<Post>()
                .Property(u => u.Accsepted_Status)
@@ -77,6 +77,11 @@ namespace Rent_Project.Model
             modelBuilder.Entity<Proposal>()
                .Property(u => u.Status)
                .HasDefaultValue(0);
+
+            modelBuilder.Entity<User>()
+    .Property(u => u.password)
+    .HasMaxLength(200);
+
         }
     }
 

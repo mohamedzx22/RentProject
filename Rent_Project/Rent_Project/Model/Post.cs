@@ -11,9 +11,8 @@ namespace Rent_Project.Model
         public int rental_status { get; set; }//0-avilable 1-rent
         public string Title { get; set; }
         public string Description { get; set; }
-
         public int Accsepted_Status { get; set; }//0-Waiting 1-accept  2-reject 
-        public byte[] images { get; set; }
+        public string  images { get; set; }
         public string location { get; set; }
         public int Price { get; set; }
         [ForeignKey("Landlord")]

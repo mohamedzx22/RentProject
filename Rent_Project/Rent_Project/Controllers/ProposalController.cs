@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rent_Project.DTO;
 using Rent_Project.Model;
+using Rent_Project.Services;
 
 namespace Rent_Project.Controllers
 {
@@ -10,30 +12,15 @@ namespace Rent_Project.Controllers
     [ApiController]
     public class ProposalController : ControllerBase
     {
+        private readonly ProposalService _proposalService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly RentAppDbContext _context;
-        public ProposalController(RentAppDbContext db) {
 
-            _context = db;
-        }
-        [HttpPost]
-        public async Task<IActionResult>AddProposal([FromForm]ProposalDto p )
+        public ProposalController(ProposalService proposalService, ICurrentUserService currentUserService , RentAppDbContext context)
         {
-            using var stream = new MemoryStream();
-            await p.Document.CopyToAsync( stream );
-
-            var proposal = new Proposal
-            {
-                name = p.name,
-                Phone = p.Phone,
-                PostId = p.PostId,
-                UserId = p.UserId,
-                Document= stream.ToArray()
-            };
-            await _context.AddAsync(proposal);
-            await _context.SaveChangesAsync();
-            return Ok(proposal);
-
-
+            _proposalService = proposalService;
+            _currentUserService = currentUserService;
+            _context = context;
         }
 
         [HttpGet("post/{postId}")]
@@ -98,6 +85,17 @@ namespace Rent_Project.Controllers
             return Ok("Proposal rejected successfully.");
         }
 
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Addproposal(int PostId, [FromForm] ProposalDto dto)
+        {
+            var UserId = _currentUserService.GetUserId();
+            var result = await _proposalService.AddProposal(UserId, PostId, dto);
+            if (result == "Done")
+                return Ok("Proposal Sent Successfuly" + result);
+            return BadRequest(result);
+        }
 
 
     }

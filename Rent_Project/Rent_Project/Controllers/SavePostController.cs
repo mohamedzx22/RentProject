@@ -81,7 +81,7 @@ namespace Rent_Project.Controllers
                     sp.Post.location,
                     sp.Post.Number_of_viewers,
                     sp.Post.rental_status,
-                    sp.Post.images
+                    //sp.Post.images
                 }).ToList();
 
                 return Ok(userSavedPosts);

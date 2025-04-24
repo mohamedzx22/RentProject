@@ -12,16 +12,9 @@ namespace Rent_Project.Model
 
         [MaxLength(50)]
         public string name { get; set; }
- 
 
-        [Column(TypeName = "nvarchar(10)")]
-        
-
+        [MaxLength(200)]
         public string password { get; set; }
-       
- 
-      
- 
         public string number { get; set; }
         public string email { get; set; }
         public int role { get; set; }//1-Admin  2-Landlord  3-Tenant
@@ -35,7 +28,8 @@ namespace Rent_Project.Model
         public virtual ICollection<Save_Post> Save_Posts { get; set; }
         
         public virtual ICollection<Proposal> Proposals { get; set; }
-        
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
+
         public Landlord Landlord { get; set; }
     }
 }

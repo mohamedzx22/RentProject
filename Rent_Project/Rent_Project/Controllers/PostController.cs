@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -31,8 +31,8 @@ namespace Rent_Project.Controllers
             if (post == null)
                 return NotFound();
 
-            post.Number_of_viewers += 1;
-            await _db.SaveChangesAsync();
+              post.Number_of_viewers += 1;
+              await _db.SaveChangesAsync();
 
             return Ok(new { viewers = post.Number_of_viewers });
         }
@@ -51,7 +51,7 @@ namespace Rent_Project.Controllers
                     p.rental_status,
                     p.Number_of_viewers,
                     p.Landlord_name,
-                    Images = p.images != null ? Convert.ToBase64String(p.images) : null
+                    //Images = p.images != null ? Convert.ToBase64String(p.images) : null
                 })
                 .ToListAsync();
 
@@ -71,18 +71,19 @@ namespace Rent_Project.Controllers
                 Title = p.Title,
                 Description = p.Description,
                 Location = p.location,
-                Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
+                //Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
                 Price = p.Price,
                 RentalStatus = p.rental_status,
                 AcceptedStatus = p.Accsepted_Status
             }).ToList();
 
             if (posts == null || posts.Count == 0)
-                return NotFound("No posts found for this landlord.");
+               return NotFound("No posts found for this landlord.");
 
             return Ok(posts);
-        }
+       }
         
+
         [HttpGet("PostDetails/{id}")]
         public async Task<ActionResult<PostDto>> GetPostById(int id)
         {
@@ -94,15 +95,15 @@ namespace Rent_Project.Controllers
                     Title = p.Title,
                     Description = p.Description,
                     Location = p.location,
-                    Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
+                    //Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
                     Price = p.Price,
                     RentalStatus = p.rental_status,
                     AcceptedStatus = p.Accsepted_Status
                 })
                 .FirstOrDefaultAsync();
 
-            if (post == null)
-                return NotFound($"Post with ID {id} not found");
+                   if (post == null)
+                      return NotFound($"Post with ID {id} not found");
 
             return Ok(post);
         }
@@ -131,7 +132,7 @@ namespace Rent_Project.Controllers
                 Title = postDto.Title,
                 Description = postDto.Description,
                 location = postDto.Location,
-                images = imageBytes,
+                //images = imageBytes,
                 Price = postDto.Price,
                 rental_status = 0,
                 Accsepted_Status = 0,
@@ -175,11 +176,11 @@ namespace Rent_Project.Controllers
                 using (var ms = new MemoryStream())
                 {
                     await updatePostDto.images.CopyToAsync(ms);
-                    post.images = ms.ToArray();
+                    //post.images = ms.ToArray();
                 }
             }
 
-            _postRepo.Update(post);
+            _postRepo.UpdateAsync(post);
 
             return NoContent();
         }
@@ -192,10 +193,9 @@ namespace Rent_Project.Controllers
             if (post == null)
                 return NotFound();
 
-            _postRepo.Delete(post);
+            _postRepo.DeleteAsync(post);
             return NoContent();
         }
 
     }
-
 }
