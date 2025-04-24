@@ -14,7 +14,7 @@ namespace Rent_Project.Services
             _proposalRepository = proposalRepository;
 
         }
-        public async Task<string> AddProposal(ProposalDto dto)
+        public async Task<string> AddProposal(int UserId, int PostId, ProposalDto dto)
         { 
            using var stream = new MemoryStream();
              await dto.Document.CopyToAsync(stream);
@@ -23,8 +23,8 @@ namespace Rent_Project.Services
         {
             name = dto.name,
             Phone = dto.Phone,
-            PostId = dto.PostId,
-            UserId = dto.UserId,
+            PostId = PostId,
+            UserId = UserId,
             Document = stream.ToArray(),
 
         };

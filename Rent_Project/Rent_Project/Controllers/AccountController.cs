@@ -27,7 +27,7 @@ namespace Rent_Project.Controllers
             var result = await _accountService.RegisterAsync(dto);
             if (result is string  )
                 return BadRequest(result);
-            return Ok(result+ "Registered Successfully");
+            return Ok( "Registered Successfully");
             
         }
 
@@ -46,6 +46,15 @@ namespace Rent_Project.Controllers
                 return Ok("login Successfully"+result);
            
         }
+
+        [HttpPost("logout")]
+        
+        public async Task<IActionResult> Logout()
+        {
+            var result = await _accountService.LogoutAsync(User);
+            return Ok(result);
+        }
+
 
 
 

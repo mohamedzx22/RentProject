@@ -10,6 +10,8 @@ using static System.Net.WebRequestMethods;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Core;
+using Microsoft.AspNetCore.Http;
 namespace Rent_Project.Services
 {
     public class AccountService
@@ -18,13 +20,17 @@ namespace Rent_Project.Services
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly RentAppDbContext _context;
         private readonly IConfiguration config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, RentAppDbContext context, IConfiguration config)
+        public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, RentAppDbContext context, IConfiguration config,IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _context = context;
             this.config = config;
+            _httpContextAccessor = httpContextAccessor;
+
+
 
         }
 
@@ -57,11 +63,11 @@ namespace Rent_Project.Services
                     "Admin" => 1,
                     "Landlord" => 2,
                     "Tenant" => 3,
-                    _ => throw new ArgumentException("Invalid role provided") // √Ê » ÕœÌœ ﬁÌ„… «› —«÷Ì…
+                    _ => throw new ArgumentException("Invalid role provided") 
                 }
             };
             await _userRepository.AddAsync(user);
-            await _context.Entry(user).ReloadAsync(); //  √ﬂœ ≈‰ ID  ⁄„· ·Â  ÕœÌÀ
+            await _context.Entry(user).ReloadAsync();
 
             if (user.role == 2)
             {
@@ -141,18 +147,22 @@ namespace Rent_Project.Services
             };
 
         }
-        public async Task<object> LogoutAsync(string refreshToken)
+        public async Task<object> LogoutAsync(ClaimsPrincipal userClaims)
         {
-            var tokenEntity = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+            var userIdClaim = userClaims.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (tokenEntity == null) return "Unauthorized";
+            if (userIdClaim == null)
+                return new { message = "Unauthorized" };
 
-            _context.RefreshTokens.Remove(tokenEntity);
+            int userId = int.Parse(userIdClaim.Value);
+
+            var tokens = _context.RefreshTokens.Where(rt => rt.UserId == userId);
+            _context.RefreshTokens.RemoveRange(tokens);
             await _context.SaveChangesAsync();
 
             return new { message = "Logged out successfully" };
         }
+
 
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 
 
@@ -38,6 +39,11 @@ namespace Rent_Project
             builder.Services.AddScoped<ProposalService>();
             builder.Services.AddScoped<ProposalRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpContextAccessor();
+
+
 
             builder.Services.AddAuthentication(options =>
             {
@@ -52,11 +58,13 @@ namespace Rent_Project
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidIssuer = builder.Configuration["Jwt:IssuerIP"],
                         ValidateAudience = true,
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidAudience = builder.Configuration["Jwt:AudienceIP"],
                         IssuerSigningKey =
-                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"]))
+                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"])),
+                         NameClaimType = ClaimTypes.NameIdentifier
+
                     };
 
                 });
@@ -108,8 +116,17 @@ namespace Rent_Project
 
             #endregion
 
-            var app = builder.Build();
 
+            var app = builder.Build();
+            app.UseStatusCodePages(context =>
+            {
+                if (context.HttpContext.Response.StatusCode == 401)
+                {
+                    context.HttpContext.Response.ContentType = "application/json";
+                    return context.HttpContext.Response.WriteAsync("{\"message\":\"Unauthorized\"}");
+                }
+                return Task.CompletedTask;
+            });
 
             if (app.Environment.IsDevelopment())
             {
@@ -118,7 +135,7 @@ namespace Rent_Project
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

@@ -12,7 +12,7 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250423202106_InitialCreate")]
+    [Migration("20250424015722_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
