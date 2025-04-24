@@ -12,7 +12,7 @@ namespace Rent_Project.Model
         public string Title { get; set; }
         public string Description { get; set; }
         public int Accsepted_Status { get; set; }//0-Waiting 1-accept  2-reject 
-        public string  images { get; set; }
+        public byte[] image { get; set; }
         public string location { get; set; }
         public int Price { get; set; }
         [ForeignKey("Landlord")]

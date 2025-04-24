@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Rent_Project.DTO;
-using Rent_Project.Migrations;
+//using Rent_Project.Migrations;
 using Rent_Project.Model;
 using Rent_Project.Repository;
 
@@ -51,7 +51,7 @@ namespace Rent_Project.Controllers
                     p.rental_status,
                     p.Number_of_viewers,
                     p.Landlord_name,
-                    //Images = p.images != null ? Convert.ToBase64String(p.images) : null
+                    Images = p.image != null ? Convert.ToBase64String(p.image) : null
                 })
                 .ToListAsync();
 
@@ -71,7 +71,7 @@ namespace Rent_Project.Controllers
                 Title = p.Title,
                 Description = p.Description,
                 Location = p.location,
-                //Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
+                Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
                 Price = p.Price,
                 RentalStatus = p.rental_status,
                 AcceptedStatus = p.Accsepted_Status
@@ -95,7 +95,7 @@ namespace Rent_Project.Controllers
                     Title = p.Title,
                     Description = p.Description,
                     Location = p.location,
-                    //Image = p.images != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.images)}" : null,
+                    Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
                     Price = p.Price,
                     RentalStatus = p.rental_status,
                     AcceptedStatus = p.Accsepted_Status
@@ -132,7 +132,7 @@ namespace Rent_Project.Controllers
                 Title = postDto.Title,
                 Description = postDto.Description,
                 location = postDto.Location,
-                //images = imageBytes,
+                image = imageBytes,
                 Price = postDto.Price,
                 rental_status = 0,
                 Accsepted_Status = 0,
@@ -176,7 +176,7 @@ namespace Rent_Project.Controllers
                 using (var ms = new MemoryStream())
                 {
                     await updatePostDto.images.CopyToAsync(ms);
-                    //post.images = ms.ToArray();
+                    post.image = ms.ToArray();
                 }
             }
 

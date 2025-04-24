@@ -27,7 +27,7 @@ namespace Rent_Project.Repository
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    //Images = p.images,
+                    Images = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
                     AccseptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
@@ -46,7 +46,7 @@ namespace Rent_Project.Repository
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    //Images = p.images,
+                    Images = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
                     AccseptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
