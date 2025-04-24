@@ -40,5 +40,7 @@ namespace Rent_Project.Repository
             _table.Remove(entity);
             _context.SaveChanges();
         }
+
+     
     }
 }
