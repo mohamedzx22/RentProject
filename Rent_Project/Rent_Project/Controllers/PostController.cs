@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Rent_Project.DTO;
-//using Rent_Project.Migrations;
+using Rent_Project.Migrations;
 using Rent_Project.Model;
 using Rent_Project.Repository;
+using Microsoft.AspNetCore.Authorization;
+using Rent_Project.Services;
 
 namespace Rent_Project.Controllers
 {
@@ -16,11 +18,13 @@ namespace Rent_Project.Controllers
     {
         private readonly IGenericRepository<Post> _postRepo;
         private readonly RentAppDbContext _db;
+        private readonly ICurrentUserService _currentUserService;
 
-        public PostController(IGenericRepository<Post> postRepo, RentAppDbContext db)
+        public PostController(IGenericRepository<Post> postRepo, RentAppDbContext db, ICurrentUserService currentUserService)
         {
             _postRepo = postRepo;
             _db = db;
+            _currentUserService = currentUserService;
         }
 
 
@@ -58,11 +62,13 @@ namespace Rent_Project.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("landlordPosts/{landlordId}")]
-        public async Task<ActionResult<IEnumerable<PostDto>>> GetPostsByLandlordId(int landlordId)
+        [Authorize]
+        [HttpGet("landlordPosts")]
+        //[Authorize(Roles = "Landlord")]
+        public async Task<ActionResult<IEnumerable<PostDto>>> GetPostsByLandlordId()
         {
             var postsFromDb = await _db.Posts
-               .Where(p => p.Landlord_id == landlordId)
+               .Where(p => p.Landlord_id == _currentUserService.GetUserId())
                .ToListAsync();
 
             var posts = postsFromDb.Select(p => new PostDto
@@ -108,13 +114,15 @@ namespace Rent_Project.Controllers
             return Ok(post);
         }
 
-        [HttpPost("landlord/{landlordId}")]
+        [Authorize]
+        [HttpPost("landlord")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreatePost([FromForm] CreatePostDto postDto, int landlordId)
+        
+        public async Task<IActionResult> CreatePost([FromForm] CreatePostDto postDto)
         {
             byte[] imageBytes = null;
 
-            var landlord = await _db.Users.FindAsync(landlordId);
+            var landlord = await _db.Users.FindAsync(_currentUserService.GetUserId());
             if (landlord == null)
                 return NotFound("Landlord not found");
 
@@ -137,7 +145,7 @@ namespace Rent_Project.Controllers
                 rental_status = 0,
                 Accsepted_Status = 0,
                 Number_of_viewers = 0,
-                Landlord_id = landlordId,
+                Landlord_id = landlord.id,
                 Landlord_name = landlord.name,
             };
 
@@ -150,14 +158,19 @@ namespace Rent_Project.Controllers
             });
         }
 
-
+        [Authorize]
         [HttpPatch("update")]
         [Consumes("multipart/form-data")]
+        //[Authorize(Roles = "Landlord")]
         public async Task<IActionResult> UpdatePost(int id, [FromForm] UpdatePostDto updatePostDto)
         {
             var post = await _postRepo.GetByIdAsync(id);
+            
             if (post == null)
-                return NotFound($"Post with ID {updatePostDto.Id} not found.");;
+                return NotFound($"Post with ID {id} not found.");
+
+            if (post.Landlord_id != _currentUserService.GetUserId())
+                return Forbid("You are not allowed to update this post.");
 
             if (!string.IsNullOrEmpty(updatePostDto.Title))
                 post.Title = updatePostDto.Title;
@@ -186,14 +199,20 @@ namespace Rent_Project.Controllers
         }
 
 
+        [Authorize]
         [HttpDelete("{id}")]
+        
         public async Task<IActionResult> DeletePost(int id)
         {
             var post = await _postRepo.GetByIdAsync(id);
             if (post == null)
-                return NotFound();
+                return NotFound($"Post with ID {id} not found.");
 
-            _postRepo.DeleteAsync(post);
+            if (post.Landlord_id != _currentUserService.GetUserId())
+                return Forbid("You are not allowed to update this post.");
+
+
+            await _postRepo.DeleteAsync(post);
             return NoContent();
         }
 
