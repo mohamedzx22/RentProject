@@ -15,10 +15,10 @@ namespace Rent_Project.Repository
             _context = context;
         }
 
-        public async Task<List<PostSummaryDto>> GetAllPostsAsync()
+        public async Task<List<PostDto>> GetAllPostsAsync()
         {
             return await _context.Posts
-                .Select(p => new PostSummaryDto
+                .Select(p => new PostDto
                 {
                     Title = p.Title,
                     Description = p.Description,
@@ -27,17 +27,17 @@ namespace Rent_Project.Repository
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    Images = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
-                    AccseptedStatus = p.Accsepted_Status
+                    Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
+                    AcceptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
         }
 
-        public async Task<List<PostSummaryDto>> GetPendingPostsAsync()
+        public async Task<List<PostDto>> GetPendingPostsAsync()
         {
             return await _context.Posts
                 .Where(p => p.Accsepted_Status == 0)
-                .Select(p => new PostSummaryDto
+                .Select(p => new PostDto
                 {
                     Title = p.Title,
                     Description = p.Description,
@@ -46,8 +46,8 @@ namespace Rent_Project.Repository
                     RentalStatus = p.rental_status,
                     NumberOfViewers = p.Number_of_viewers,
                     LandlordName = p.Landlord_name,
-                    Images = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
-                    AccseptedStatus = p.Accsepted_Status
+                    Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
+                    AcceptedStatus = p.Accsepted_Status
                 })
                 .ToListAsync();
         }

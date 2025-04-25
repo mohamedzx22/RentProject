@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Rent_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class initdatabase : Migration
+    public partial class RentDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -87,6 +87,7 @@ namespace Rent_Project.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Accsepted_Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    image = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Landlord_id = table.Column<int>(type: "int", nullable: false),

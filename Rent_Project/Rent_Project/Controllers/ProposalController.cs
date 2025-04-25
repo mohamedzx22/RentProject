@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Rent_Project.DTO;
 using Rent_Project.Model;
 using Rent_Project.Services;
@@ -78,8 +79,13 @@ namespace Rent_Project.Controllers
             if (proposal == null)
                 return NotFound("Proposal not found.");
             
-            proposal.Status = 2; 
+            proposal.Status = 2;
+            var post = await _context.Posts.FindAsync(proposal.PostId);
 
+            if (post == null)
+                return NotFound("Post associated with the proposal not found.");
+
+            post.rental_status = 0;
             await _context.SaveChangesAsync();
 
             return Ok("Proposal rejected successfully.");

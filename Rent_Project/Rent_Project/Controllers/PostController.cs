@@ -193,9 +193,16 @@ namespace Rent_Project.Controllers
             if (post == null)
                 return NotFound();
 
+            var proposalsToDelete = _db.Proposals.Where(p => p.PostId == id);
+            _db.Proposals.RemoveRange(proposalsToDelete);
+
+            await _db.SaveChangesAsync();
+
             _postRepo.DeleteAsync(post);
+
             return NoContent();
         }
+
 
     }
 }

@@ -12,8 +12,8 @@ using Rent_Project.Model;
 namespace Rent_Project.Migrations
 {
     [DbContext(typeof(RentAppDbContext))]
-    [Migration("20250424153914_init database")]
-    partial class initdatabase
+    [Migration("20250424193313_RentDB")]
+    partial class RentDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,6 +110,10 @@ namespace Rent_Project.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("image")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("location")
                         .IsRequired()
