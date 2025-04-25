@@ -86,7 +86,7 @@ namespace Rent_Project.Controllers
         }
 
 
-        [Authorize]
+       [Authorize (Roles= "3")]
         [HttpPost]
         public async Task<IActionResult> Addproposal(int PostId, [FromForm] ProposalDto dto)
         {
