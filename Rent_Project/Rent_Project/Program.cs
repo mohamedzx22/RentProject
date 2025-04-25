@@ -11,10 +11,6 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 
-
-
-
-
 namespace Rent_Project
 {
     public class Program
@@ -25,13 +21,9 @@ namespace Rent_Project
             builder.Services.AddDbContext<RentAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<MessageService>();
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -40,34 +32,50 @@ namespace Rent_Project
             builder.Services.AddScoped<ProposalRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<IMessageRepository,MessageRepository>();
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<MessageService>();
 
 
 
             builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;//unauther
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}
+    ).AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:IssuerIP"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:AudienceIP"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"])),
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnForbidden = context =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;//unauther
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"message\": \"Unauthorized: Role not allowed\"}");
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse(); 
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"message\": \"Unauthorized: Token missing or invalid\"}");
             }
-                ).AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = builder.Configuration["Jwt:IssuerIP"],
-                        ValidateAudience = true,
-                        ValidAudience = builder.Configuration["Jwt:AudienceIP"],
-                        IssuerSigningKey =
-                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"])),
-                         NameClaimType = ClaimTypes.NameIdentifier
+        };
+    });
 
-                    };
-
-                });
 
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rent_Project.Model;
@@ -21,7 +22,7 @@ namespace Rent_Project.Controllers
         }
 
 
-
+        [Authorize(Roles = "3")]
         [HttpPost("save")]
         public async Task<IActionResult> SavePost(int TenantID, int PostId)
         {
@@ -58,9 +59,11 @@ namespace Rent_Project.Controllers
                 return BadRequest(ex.Message);
             }
         }
-    
 
-    [HttpGet("saved-posts/{userId}")]
+
+
+        [Authorize(Roles = "3")]
+        [HttpGet("saved-posts/{userId}")]
         public async Task<IActionResult> GetSavedPosts(int userId)
         {
             try

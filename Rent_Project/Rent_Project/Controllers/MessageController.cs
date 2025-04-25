@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿// Controllers/MessageController.cs
+using Microsoft.AspNetCore.Mvc;
 using Rent_Project.DTO;
+using Rent_Project.Services;
+using System.Threading.Tasks;
 
 namespace Rent_Project.Controllers
 {
@@ -9,11 +11,8 @@ namespace Rent_Project.Controllers
     public class MessageController : ControllerBase
     {
         private readonly MessageService _messageService;
-
         public MessageController(MessageService messageService)
-        {
-            _messageService = messageService;
-        }
+            => _messageService = messageService;
 
         [HttpPost("send")]
         public async Task<IActionResult> SendMessage([FromBody] CreateMessageDto dto)
@@ -29,6 +28,4 @@ namespace Rent_Project.Controllers
             return Ok(messages);
         }
     }
-
 }
-

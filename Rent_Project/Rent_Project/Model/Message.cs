@@ -20,5 +20,7 @@ namespace Rent_Project.Model
 
         [ForeignKey("ReceiverId")]
         public virtual User Receiver { get; set; }
+
+      
     }
 }

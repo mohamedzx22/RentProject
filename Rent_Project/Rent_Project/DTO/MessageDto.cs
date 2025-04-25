@@ -1,15 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// DTO/MessageDto.cs
+using System;
 
 namespace Rent_Project.DTO
 {
     public class MessageDto
     {
-        public string Text { get; set; }
-        public DateTime Date { get; set; }
-     
-    
-
+        public string PlainText { get; set; }
+        public int SenderId { get; set; }
+        public int ReceiverId { get; set; }
+        public DateTime SentAt { get; set; }
+    }
 }
-
-}
-

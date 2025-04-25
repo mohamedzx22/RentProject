@@ -1,45 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Services/MessageService.cs
 using Rent_Project.DTO;
 using Rent_Project.Model;
+using Rent_Project.Repository;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-public class MessageService
+namespace Rent_Project.Services
 {
-    private readonly RentAppDbContext _context;
-
-    public MessageService(RentAppDbContext context)
+    public class MessageService
     {
-        _context = context;
-    }
+        private readonly IMessageRepository _messageRepo;
 
-    public async Task SendMessageAsync(CreateMessageDto dto)
-    {
-        var message = new Message
+        public MessageService(IMessageRepository messageRepo)
+            => _messageRepo = messageRepo;
+
+        public async Task SendMessageAsync(CreateMessageDto dto)
         {
-            text = dto.text,
-            date = DateTime.Now,
-            SenderId = dto.SenderId,
-            ReceiverId = dto.ReceiverId
-        };
-
-        _context.Messeges.Add(message);
-        await _context.SaveChangesAsync();
-    }
-
-
-    public async Task<List<MessageDto>> GetMessagesBetweenUsers(int senderId, int receiverId)
-    {
-        var messages = await _context.Messeges
-            .Where(m =>
-                (m.SenderId == senderId && m.ReceiverId == receiverId) ||
-                (m.SenderId == receiverId && m.ReceiverId == senderId))
-            .OrderBy(m => m.date)
-            .Select(m => new MessageDto
+            var entity = new Message
             {
-                Text = m.text,
-                Date = m.date
-            })
-            .ToListAsync();
+                SenderId = dto.SenderId,
+                ReceiverId = dto.ReceiverId,
+                text = EncryptionHelper.Encrypt(dto.PlainText),
+                date = DateTime.UtcNow
+            };
+            await _messageRepo.AddAsync(entity);
+        }
 
-        return messages;
+        public async Task<List<MessageDto>> GetMessagesBetweenUsers(int senderId, int receiverId)
+        {
+            var chat = await _messageRepo.GetChatAsync(senderId, receiverId);
+            return chat.Select(m => new MessageDto
+            {
+                PlainText = EncryptionHelper.Decrypt(m.text),
+                SenderId = m.SenderId,
+                ReceiverId = m.ReceiverId,
+                SentAt = m.date
+            }).ToList();
+        }
     }
 }

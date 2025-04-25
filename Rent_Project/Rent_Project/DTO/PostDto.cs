@@ -12,5 +12,6 @@
         public int AcceptedStatus {  get; set; }
         public int NumberOfViewers { get; set; }
         public string LandlordName { get; set; }
+        
     }
 }
