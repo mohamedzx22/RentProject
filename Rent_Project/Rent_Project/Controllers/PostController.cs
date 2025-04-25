@@ -62,7 +62,7 @@ namespace Rent_Project.Controllers
             return Ok(posts);
         }
 
-        [Authorize]
+        [Authorize(Roles = "2")]
         [HttpGet("landlordPosts")]
         //[Authorize(Roles = "Landlord")]
         public async Task<ActionResult<IEnumerable<PostDto>>> GetPostsByLandlordId()
@@ -114,7 +114,7 @@ namespace Rent_Project.Controllers
             return Ok(post);
         }
 
-        [Authorize]
+        [Authorize(Roles = "2")]
         [HttpPost("landlord")]
         [Consumes("multipart/form-data")]
         
@@ -158,7 +158,7 @@ namespace Rent_Project.Controllers
             });
         }
 
-        [Authorize]
+        [Authorize(Roles = "2")]
         [HttpPatch("update")]
         [Consumes("multipart/form-data")]
         //[Authorize(Roles = "Landlord")]
@@ -199,7 +199,7 @@ namespace Rent_Project.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "2")]
         [HttpDelete("{id}")]
         
         public async Task<IActionResult> DeletePost(int id)
@@ -209,7 +209,7 @@ namespace Rent_Project.Controllers
                 return NotFound($"Post with ID {id} not found.");
 
             if (post.Landlord_id != _currentUserService.GetUserId())
-                return Forbid("You are not allowed to update this post.");
+                return Forbid("You are not allowed to delete this post.");
 
 
             await _postRepo.DeleteAsync(post);

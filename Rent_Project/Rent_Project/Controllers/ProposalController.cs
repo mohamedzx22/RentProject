@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Rent_Project.DTO;
 using Rent_Project.Model;
+using Rent_Project.Repository;
 using Rent_Project.Services;
 
 namespace Rent_Project.Controllers
@@ -15,17 +17,26 @@ namespace Rent_Project.Controllers
         private readonly ProposalService _proposalService;
         private readonly ICurrentUserService _currentUserService;
         private readonly RentAppDbContext _context;
+        private readonly IGenericRepository<Post> _postRepo;
+        private readonly IGenericRepository<Proposal> _proposalRepo;
 
-        public ProposalController(ProposalService proposalService, ICurrentUserService currentUserService , RentAppDbContext context)
+        public ProposalController(ProposalService proposalService, ICurrentUserService currentUserService , RentAppDbContext context, IGenericRepository<Post> postRepo , IGenericRepository<Proposal> ProposalRepo)
         {
             _proposalService = proposalService;
             _currentUserService = currentUserService;
             _context = context;
+            _postRepo = postRepo;
+            _proposalRepo = ProposalRepo;
         }
 
+        [Authorize(Roles = "2")]
         [HttpGet("post/{postId}")]
         public async Task<IActionResult> GetProposalsByPostId(int postId)
         {
+            var post = await _postRepo.GetByIdAsync(postId);
+            if (post.Landlord_id != _currentUserService.GetUserId())
+                return Forbid("You are not allowed to update this post.");
+
             var proposals = await _context.Proposals
                 .Where(p => p.PostId == postId)
                 .ToListAsync();
@@ -47,9 +58,17 @@ namespace Rent_Project.Controllers
             return Ok(proposalsDto); 
         }
 
+
+
+
+
+
+
+        [Authorize(Roles = "2")]
         [HttpPut("approve-proposal/{id}")]
         public async Task<IActionResult> ApproveProposal(int id)
         {
+            
             var proposal = await _context.Proposals.FindAsync(id);
 
             if (proposal == null)
@@ -69,7 +88,7 @@ namespace Rent_Project.Controllers
             return Ok("Proposal approved and associated Post rental status updated successfully.");
         }
 
-
+        [Authorize(Roles = "2")]
         [HttpPut("reject-proposal/{id}")]
         public async Task<IActionResult> RejectProposal(int id)
         {
@@ -97,6 +116,9 @@ namespace Rent_Project.Controllers
             return BadRequest(result);
         }
 
-
+        [Authorize(Roles = "2")]
+        [HttpGet ("Pending Proposals")]
+        public async Task<IActionResult> GetPendingProposals()
+            => Ok(await _proposalRepo.GetAllAsync());
     }
 }

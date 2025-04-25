@@ -8,6 +8,7 @@ namespace Rent_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "1")]
     public class AdminController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
@@ -20,7 +21,7 @@ namespace Rent_Project.Controllers
         }
 
         [HttpGet("all-landlords")]
-        [Authorize]
+        
         public async Task<IActionResult> GetLandlords()
             => Ok(await _userRepo.GetAllLandlordsAsync());
 
