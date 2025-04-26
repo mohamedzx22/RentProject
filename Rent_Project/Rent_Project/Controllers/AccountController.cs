@@ -54,6 +54,16 @@ namespace Rent_Project.Controllers
             var result = await _accountService.LogoutAsync(User);
             return Ok(result);
         }
+         [HttpPost("refresh-token")]
+ public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken )
+ {
+     var result = await _accountService.RefreshTokenAsync(refreshToken.Token);
+     if (result == null)
+         return Unauthorized("Invalid or expired refresh token");
+
+     return Ok(result);
+ }
+        
 
 
 
