@@ -150,6 +150,12 @@ namespace Rent_Project.Repository
 
             return refreshToken;
         }
+           public int? ValidateRefreshToken(string refreshToken)
+   {
+       var tokenInDb = _context.RefreshTokens.FirstOrDefault(r => r.Token == refreshToken && r.ExpiryDate > DateTime.Now);
+       return tokenInDb?.UserId;
+   }
+        
         
     }
 }
