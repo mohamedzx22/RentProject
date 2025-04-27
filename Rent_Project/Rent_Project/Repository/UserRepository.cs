@@ -150,11 +150,27 @@ namespace Rent_Project.Repository
 
             return refreshToken;
         }
+
+
+        
            public int? ValidateRefreshToken(string refreshToken)
    {
        var tokenInDb = _context.RefreshTokens.FirstOrDefault(r => r.Token == refreshToken && r.ExpiryDate > DateTime.Now);
        return tokenInDb?.UserId;
    }
+
+   
+    public async Task DeleteRefreshTokenAsync(string refreshToken)
+ {
+     var existingToken = await _context.RefreshTokens
+         .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+     if (existingToken != null)
+     {
+         _context.RefreshTokens.Remove(existingToken);
+         await _context.SaveChangesAsync();
+     }
+ }
         
         
     }
