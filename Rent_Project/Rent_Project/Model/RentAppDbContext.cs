@@ -13,7 +13,7 @@ namespace Rent_Project.Model
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Message> Messeges { get; set; }
+        public DbSet<Message> Masseges { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Save_Post> Save_Posts { get; set; }
         public DbSet<Proposal> Proposals { get; set; }

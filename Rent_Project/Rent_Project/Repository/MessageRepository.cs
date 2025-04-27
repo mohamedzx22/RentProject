@@ -1,32 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Rent_Project.Model;
+﻿using Rent_Project.Model;
+using Microsoft.EntityFrameworkCore;
 
-namespace Rent_Project.Repositories
+namespace Rent_Project.Repository
 {
-	public class MessageRepository
-	{
-		private readonly RentAppDbContext _context;
+    public class MessageRepository :IMessageRepository
+    {
+        
+            private readonly RentAppDbContext _context;
+            public MessageRepository(RentAppDbContext context) => _context = context;
 
-		public MessageRepository(RentAppDbContext context)
-		{
-			_context = context;
-		}
+            public async Task AddAsync(Message message)
+            {
+                await _context.Masseges.AddAsync(message);
+                await _context.SaveChangesAsync();
+            }
 
-		public async Task<List<Message>> GetMessagesBetweenUsersAsync(int senderId, int receiverId)
-		{
-			return await _context.Messages
-				.Where(m =>
-					(m.SenderId == senderId && m.ReceiverId == receiverId) ||
-					(m.SenderId == receiverId && m.ReceiverId == senderId))
-				.OrderBy(m => m.date)
-				.ToListAsync();
-		}
-
-		public async Task<Message> SendMessageAsync(Message message)
-		{
-			await _context.Messages.AddAsync(message);
-			await _context.SaveChangesAsync();
-			return message;
-		}
-	}
+            public async Task<List<Message>> GetChatAsync(int senderId, int receiverId)
+            {
+                return await _context.Masseges
+                    .Where(m =>
+                        (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                        (m.SenderId == receiverId && m.ReceiverId == senderId))
+                    .OrderBy(m => m.date)
+                    .ToListAsync();
+            }
+        }
+    
 }

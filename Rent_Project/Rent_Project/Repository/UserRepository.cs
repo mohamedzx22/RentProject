@@ -139,6 +139,34 @@ namespace Rent_Project.Repository
        
 
 
+<<<<<<< HEAD
+=======
+            return refreshToken;
+        }
+
+
+        
+           public int? ValidateRefreshToken(string refreshToken)
+   {
+       var tokenInDb = _context.RefreshTokens.FirstOrDefault(r => r.Token == refreshToken && r.ExpiryDate > DateTime.Now);
+       return tokenInDb?.UserId;
+   }
+
+   
+    public async Task DeleteRefreshTokenAsync(string refreshToken)
+ {
+     var existingToken = await _context.RefreshTokens
+         .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+     if (existingToken != null)
+     {
+         _context.RefreshTokens.Remove(existingToken);
+         await _context.SaveChangesAsync();
+     }
+ }
+        
+        
+>>>>>>> aa68a79b117d838b45b2dffbfbd68578337005ec
     }
 }
     

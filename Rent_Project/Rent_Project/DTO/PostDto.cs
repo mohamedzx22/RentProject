@@ -10,5 +10,8 @@
         public int Price { get; set; }
         public int RentalStatus { get; set; }
         public int AcceptedStatus {  get; set; }
+        public int NumberOfViewers { get; set; }
+        public string LandlordName { get; set; }
+        
     }
 }
