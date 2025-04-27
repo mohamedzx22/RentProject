@@ -174,7 +174,7 @@ namespace Rent_Project.Services
         var user = await _userRepository.GetByIdAsync(userId.Value);
         if (user == null)
             return null;
-
+        await _userRepository.DeleteRefreshTokenAsync(refreshToken);
         var claims = new[]
         {
     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -204,6 +204,7 @@ namespace Rent_Project.Services
             message = "Token refreshed successfully"
         };
     }
+        
 
 
     }
