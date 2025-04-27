@@ -178,53 +178,7 @@ namespace Rent_Project.Services
         }
 
 
-<<<<<<< HEAD
-       
-=======
-        
-            public async Task<object> RefreshTokenAsync(string refreshToken)
-    {
-        var userId = _userRepository.ValidateRefreshToken(refreshToken);
-        if (userId == null)
-            return null;
-
-        var user = await _userRepository.GetByIdAsync(userId.Value);
-        if (user == null)
-            return null;
-        await _userRepository.DeleteRefreshTokenAsync(refreshToken);
-        var claims = new[]
-        {
-    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-    new Claim(ClaimTypes.Email, user.email),
-    new Claim(ClaimTypes.Role, user.role.ToString())
-};
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:SecritKey"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: config["JWT:IssuerIP"],
-            audience: config["JWT:AudienceIP"],
-            expires: DateTime.Now.AddHours(1),
-            claims: claims,
-            signingCredentials: creds
-        );
-
-        var newRefresh = _userRepository.GenerateRefreshToken(user.id);
-
-        return new
-        {
-            token = new JwtSecurityTokenHandler().WriteToken(token),
-            expiration = DateTime.Now.AddHours(1),
-            refreshToken = newRefresh.Token,
-            message = "Token refreshed successfully"
-        };
-    }
-        
-
-
->>>>>>> aa68a79b117d838b45b2dffbfbd68578337005ec
+ 
     }
 
 }
