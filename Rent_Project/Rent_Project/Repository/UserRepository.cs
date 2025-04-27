@@ -9,8 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-
-
 namespace Rent_Project.Repository
 {
     public class UserRepository : IUserRepository
@@ -136,21 +134,11 @@ namespace Rent_Project.Repository
             return await _context.SaveChangesAsync();
         }
 
-        public RefreshToken GenerateRefreshToken(int userId)
-        {
-            var refreshToken = new RefreshToken
-            {
-                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                Created = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddDays(7),
-                UserId = userId
-            };
-            _context.RefreshTokens.Add(refreshToken);
-            _context.SaveChanges(); 
+     
+         
+       
 
-            return refreshToken;
-        }
-        
+
     }
 }
     

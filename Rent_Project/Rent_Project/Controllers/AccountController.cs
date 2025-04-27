@@ -15,10 +15,13 @@ namespace Rent_Project.Controllers
     public class AccountController : ControllerBase
     {
         private readonly AccountService _accountService;
+        private readonly IRefreshTokenService _refreshTokenServices;
 
-        public AccountController(AccountService accountService)
+
+        public AccountController(AccountService accountService, IRefreshTokenService refreshTokenServices)
         {
             _accountService = accountService;
+            _refreshTokenServices = refreshTokenServices;
         }
 
         [HttpPost("register")]
@@ -39,19 +42,27 @@ namespace Rent_Project.Controllers
             {
                 return BadRequest(result);
             }
-
-
-
-
                 return Ok("login Successfully"+result);
-           
         }
 
         [HttpPost("logout")]
-        
+         
         public async Task<IActionResult> Logout()
         {
             var result = await _accountService.LogoutAsync(User);
+            return Ok(result);
+        }
+
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken)
+        {
+            var result = await _refreshTokenServices.RefreshTokenAsync(refreshToken.Token);
+
+            if (result == null)
+
+                return Unauthorized("Invalid or expired refresh token");
+
             return Ok(result);
         }
 

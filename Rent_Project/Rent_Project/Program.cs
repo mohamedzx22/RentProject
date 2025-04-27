@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 
 
 
@@ -21,6 +22,7 @@ namespace Rent_Project
     {
         public static void Main(string[] args)
         {
+            
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<RentAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -42,6 +44,9 @@ namespace Rent_Project
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
 
 
 
@@ -55,20 +60,33 @@ namespace Rent_Project
                 {
                     options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidIssuer = builder.Configuration["Jwt:IssuerIP"],
                         ValidateAudience = true,
                         ValidAudience = builder.Configuration["Jwt:AudienceIP"],
-                        IssuerSigningKey =
-                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"])),
-                         NameClaimType = ClaimTypes.NameIdentifier
-
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecritKey"])),
+                        NameClaimType = ClaimTypes.NameIdentifier,
+                        RoleClaimType = ClaimTypes.Role
                     };
-
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnForbidden = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/json";
+                            return context.Response.WriteAsync("{\"message\": \"Unauthorized: Role not allowed\"}");
+                        },
+                        OnChallenge = context =>
+                        {
+                            context.HandleResponse(); 
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+                            return context.Response.WriteAsync("{\"message\": \"Unauthorized: Token missing or invalid\"}");
+                        }
+                    };
                 });
-
 
 
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -79,15 +97,15 @@ namespace Rent_Project
             #region Swagger Setting
             builder.Services.AddSwaggerGen(swagger =>
             {
-                // This is to generate the default UI of Swagger documentation
+                
                 swagger.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "ASP.NET 8 Web API",
-                    Description = "ITI Project"
+                    Description = "Rent Project"
                 });
 
-                // To enable authorization using Swagger (JWT)
+                
                 swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -116,17 +134,7 @@ namespace Rent_Project
 
             #endregion
 
-
             var app = builder.Build();
-            app.UseStatusCodePages(context =>
-            {
-                if (context.HttpContext.Response.StatusCode == 401)
-                {
-                    context.HttpContext.Response.ContentType = "application/json";
-                    return context.HttpContext.Response.WriteAsync("{\"message\":\"Unauthorized\"}");
-                }
-                return Task.CompletedTask;
-            });
 
             if (app.Environment.IsDevelopment())
             {

@@ -21,18 +21,22 @@ namespace Rent_Project.Services
         private readonly RentAppDbContext _context;
         private readonly IConfiguration config;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IRefreshTokenRepository _refreshtokenrepository;
+       
 
-        public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, RentAppDbContext context, IConfiguration config,IHttpContextAccessor httpContextAccessor)
+        public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, RentAppDbContext context, IConfiguration config,IHttpContextAccessor httpContextAccessor, IRefreshTokenRepository refreshtokenrepository)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _context = context;
             this.config = config;
             _httpContextAccessor = httpContextAccessor;
-
-
-
+            _refreshtokenrepository = refreshtokenrepository;
+           
         }
+
+
+
 
         public async Task<object> RegisterAsync(RegisterDto dto)
         {
@@ -86,6 +90,11 @@ namespace Rent_Project.Services
         }
 
 
+
+
+
+
+
         public async Task<object> LoginAsync(LoginDto dto)
         {
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
@@ -131,7 +140,7 @@ namespace Rent_Project.Services
                 claims: claims,
                 signingCredentials: signingCred
                 );
-            var refreshtoken = _userRepository.GenerateRefreshToken(user.id);
+            var refreshtoken = await _refreshtokenrepository.GenerateRefreshTokenAsync(user.id);
 
             // generate token
 
@@ -147,6 +156,11 @@ namespace Rent_Project.Services
             };
 
         }
+
+
+
+
+
         public async Task<object> LogoutAsync(ClaimsPrincipal userClaims)
         {
             var userIdClaim = userClaims.FindFirst(ClaimTypes.NameIdentifier);
@@ -164,5 +178,8 @@ namespace Rent_Project.Services
         }
 
 
+       
     }
+
 }
+

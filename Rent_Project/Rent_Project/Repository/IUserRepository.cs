@@ -18,7 +18,8 @@ namespace Rent_Project.Repository
         Task<bool> RejectLandlordAsync(int landlordUserId);
         Task<int> DeleteRejectedLandlordsAsync();
 
-        RefreshToken GenerateRefreshToken(int userId);
         
+
+
     }
 }
