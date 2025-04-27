@@ -20,6 +20,6 @@ namespace Rent_Project.Repository
 
         RefreshToken GenerateRefreshToken(int userId);
          int? ValidateRefreshToken(string refreshToken);
-        
+          Task DeleteRefreshTokenAsync(string refreshToken);
     }
 }
