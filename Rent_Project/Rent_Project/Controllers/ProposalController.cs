@@ -119,6 +119,61 @@ namespace Rent_Project.Controllers
         [HttpGet("Pending Proposals")]
         public async Task<IActionResult> GetPendingProposals()
             => Ok(await _proposalRepo.GetAllAsync());
+
+
+        [Authorize(Roles = "2")]
+        [HttpGet("accepted-proposals/{postId}")]
+        public async Task<IActionResult> GetAcceptedProposals(int postId)
+        {
+            var proposals = await _proposalRepo.GetAllAsync();
+            var acceptedProposals = proposals
+                .Where(p => p.PostId == postId && p.Status == 1)
+                .Select(p => new
+                {
+                    p.name,
+                    p.Phone,
+                    p.PostId,
+                    p.UserId,
+                    Document = Convert.ToBase64String(p.Document)
+                })
+                .ToList();
+
+            if (acceptedProposals == null || acceptedProposals.Count == 0)
+            {
+                return NotFound($"No accepted proposals found for PostId {postId}");
+            }
+
+            return Ok(acceptedProposals);
+        }
+
+        // Get all rejected proposals for a specific post
+        [Authorize(Roles = "2")]
+        [HttpGet("rejected-proposals/{postId}")]
+        public async Task<IActionResult> GetRejectedProposals(int postId)
+        {
+            var proposals = await _proposalRepo.GetAllAsync();
+            var rejectedProposals = proposals
+                .Where(p => p.PostId == postId && p.Status == 2)
+                .Select(p => new
+                {
+                    p.name,
+                    p.Phone,
+                    p.PostId,
+                    p.UserId,
+                    Document = Convert.ToBase64String(p.Document)
+                })
+                .ToList();
+
+            if (rejectedProposals == null || rejectedProposals.Count == 0)
+            {
+                return NotFound($"No rejected proposals found for PostId {postId}");
+            }
+
+            return Ok(rejectedProposals);
+        }
+
     }
+
+
 
 }
