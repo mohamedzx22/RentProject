@@ -16,113 +16,56 @@ namespace Rent_Project.Controllers
     [Route("api/[controller]")]
     public class PostController : ControllerBase
     {
-        private readonly IGenericRepository<Post> _postRepo;
-        private readonly RentAppDbContext _db;
+        private readonly IPostRepository _postRepo;
+        private readonly IUserRepository _userRepo; 
         private readonly ICurrentUserService _currentUserService;
 
-        public PostController(IGenericRepository<Post> postRepo, RentAppDbContext db, ICurrentUserService currentUserService)
+        public PostController(IPostRepository postRepo, IUserRepository userRepo, ICurrentUserService currentUserService)
         {
             _postRepo = postRepo;
-            _db = db;
+            _userRepo = userRepo;  
             _currentUserService = currentUserService;
         }
-
 
         [HttpPost("add-1-view-post/{id}")]
         public async Task<IActionResult> ViewPost(int id)
         {
-            var post = await _db.Posts.FindAsync(id);
-            if (post == null)
+            var viewers = await _postRepo.AddViewToPostAsync(id);
+            if (viewers == -1)
                 return NotFound();
 
-              post.Number_of_viewers += 1;
-              await _db.SaveChangesAsync();
-
-            return Ok(new { viewers = post.Number_of_viewers });
+            return Ok(new { viewers });
         }
+
 
         [HttpGet("view-tenant")]
         public async Task<IActionResult> GetAcceptedPosts()
         {
-            var posts = await _db.Posts
-                .Where(p => p.Accsepted_Status == 1)
-                .Select(p => new
-                {
-                    p.Title,
-                    p.Description,
-                    p.location,
-                    p.Price,
-                    p.rental_status,
-                    p.Number_of_viewers,
-                    p.Landlord_name,
-                    Images = p.image != null ? Convert.ToBase64String(p.image) : null
-                })
-                .ToListAsync();
-
+            var posts = await _postRepo.GetAcceptedPostsAsync();
             return Ok(posts);
         }
 
         [Authorize(Roles = "2")]
-        [HttpGet("landlordPosts")]
-        //[Authorize(Roles = "Landlord")]
-        public async Task<ActionResult<IEnumerable<PostDto>>> GetPostsByLandlordId()
-        {
-            var postsFromDb = await _db.Posts
-               .Where(p => p.Landlord_id == _currentUserService.GetUserId())
-               .ToListAsync();
-
-            var posts = postsFromDb.Select(p => new PostDto
-            {
-                Id = p.id,
-                Title = p.Title,
-                Description = p.Description,
-                Location = p.location,
-                Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
-                Price = p.Price,
-                RentalStatus = p.rental_status,
-                AcceptedStatus = p.Accsepted_Status
-            }).ToList();
-
-            if (posts == null || posts.Count == 0)
-               return NotFound("No posts found for this landlord.");
-
-            return Ok(posts);
-       }
-        
-
         [HttpGet("PostDetails/{id}")]
         public async Task<ActionResult<PostDto>> GetPostById(int id)
         {
-            var post = await _db.Posts
-                .Where(p => p.id == id)
-                .Select(p => new PostDto
-                {
-                    Id = p.id,
-                    Title = p.Title,
-                    Description = p.Description,
-                    Location = p.location,
-                    Image = p.image != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(p.image)}" : null,
-                    Price = p.Price,
-                    RentalStatus = p.rental_status,
-                    AcceptedStatus = p.Accsepted_Status
-                })
-                .FirstOrDefaultAsync();
+            var post = await _postRepo.GetPostDetailsByIdAsync(id);
 
-                   if (post == null)
-                      return NotFound($"Post with ID {id} not found");
+            if (post == null)
+                return NotFound($"Post with ID {id} not found");
 
             return Ok(post);
         }
 
-        [Authorize(Roles = "2")]
+
         [HttpPost("landlord")]
         [Consumes("multipart/form-data")]
-        
         public async Task<IActionResult> CreatePost([FromForm] CreatePostDto postDto)
         {
             byte[] imageBytes = null;
 
-            var landlord = await _db.Users.FindAsync(_currentUserService.GetUserId());
+            
+            var landlord = await _userRepo.GetByIdAsync(_currentUserService.GetUserId());
             if (landlord == null)
                 return NotFound("Landlord not found");
 
@@ -149,6 +92,7 @@ namespace Rent_Project.Controllers
                 Landlord_name = landlord.name,
             };
 
+            
             await _postRepo.AddAsync(post);
 
             return Ok(new
@@ -157,21 +101,24 @@ namespace Rent_Project.Controllers
                 PostId = post.id
             });
         }
+    
 
         [Authorize(Roles = "2")]
         [HttpPatch("update")]
         [Consumes("multipart/form-data")]
-        //[Authorize(Roles = "Landlord")]
         public async Task<IActionResult> UpdatePost(int id, [FromForm] UpdatePostDto updatePostDto)
         {
-            var post = await _postRepo.GetByIdAsync(id);
             
+            var post = await _postRepo.GetPostEntityByIdAsync(id);
+
             if (post == null)
                 return NotFound($"Post with ID {id} not found.");
 
+            
             if (post.Landlord_id != _currentUserService.GetUserId())
                 return Forbid("You are not allowed to update this post.");
 
+          
             if (!string.IsNullOrEmpty(updatePostDto.Title))
                 post.Title = updatePostDto.Title;
 
@@ -193,35 +140,34 @@ namespace Rent_Project.Controllers
                 }
             }
 
-            _postRepo.UpdateAsync(post);
+
+            await _postRepo.UpdateAsync(post);
 
             return NoContent();
         }
 
 
+
+        [Authorize(Roles = "2")]
         [Authorize(Roles = "2")]
         [HttpDelete("{id}")]
-        
         public async Task<IActionResult> DeletePost(int id)
         {
             var post = await _postRepo.GetByIdAsync(id);
             if (post == null)
                 return NotFound($"Post with ID {id} not found.");
 
-            var proposalsToDelete = _db.Proposals.Where(p => p.PostId == id);
-            _db.Proposals.RemoveRange(proposalsToDelete);
+            
+            await _postRepo.DeleteProposalsByPostIdAsync(id);
 
-            await _db.SaveChangesAsync();
-
-            _postRepo.DeleteAsync(post);
+            await _postRepo.DeleteAsync(post);
 
             if (post.Landlord_id != _currentUserService.GetUserId())
                 return Forbid("You are not allowed to delete this post.");
 
-
-            await _postRepo.DeleteAsync(post);
             return NoContent();
         }
+
 
 
     }

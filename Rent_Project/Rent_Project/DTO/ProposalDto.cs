@@ -12,8 +12,9 @@ namespace Rent_Project.DTO
         public string Phone { get; set; }
         [Required]
         public IFormFile Document { get; set; }
-        
-        
+        [Required]
+        public int PostId { get; set; }
+
 
 
     }
